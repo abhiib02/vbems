@@ -4,7 +4,7 @@
             <h5>
                 <span class="fw-bold">Calculated Salary of <?= getMonthName($month) ?></span>
             </h5>
-            <small>( To be eligible for salary, an employee must have attended a minimum of 10 days in the
+            <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
                 month. )</small>
             <button class="position-absolute btn btn-sm btn-outline-secondary" style="top:10px; right:10px;"
                 onclick="closeDialog()">X</button>
@@ -26,8 +26,8 @@
                 </tr>
                 <tr>
                     <td>Calculated Salary = <b>₹<?= $calculatedSalary ?>
-                            <?= ($attendedDays <= 9) ? '(10 Days Attendance Required)' : '' ?></b>
-                        <?php if (($attendedDays > 9)): ?> | <b>(<?= $totalWorkingDays ?> Days)</b> x
+                            <?= ($attendedDays <= $minimumDayAttendance) ? '(15 Days Attendance Required)' : '' ?></b>
+                        <?php if (($attendedDays > $minimumDayAttendance)): ?> | <b>(<?= $totalWorkingDays ?> Days)</b> x
                             <b>(<?= $DayPay ?> Pay/day)</b><?php endif; ?>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
     </div>
     <div class="card-body">
         <div class="fs-3"><b>₹ <?= $calculatedSalary ?></b></div>
-        <small>( To be eligible for salary, an employee must have attended a minimum of 10 days in the
+        <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
             month. )</small>
     </div>
 </div>

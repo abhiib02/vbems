@@ -10,6 +10,8 @@ $attendedDays = count($attendance);
 $totalWorkingDays = ($attendedDays + $paid_leaves + ($sundays - ($sundays_in_leaves + $sundayBeforeJoining)));
 $coutable_sunday = $sundays - ($sundays_in_leaves + $sundayBeforeJoining);
 $HolidayNotOnSunday = 0;
+$minimumDayAttendance = 15;
+
 foreach ($Holidays as $holiday) {
     $holidayDate = new DateTime($holiday->DATE);
     $HolidayDateDay = $holidayDate->format('w');
@@ -20,9 +22,10 @@ foreach ($Holidays as $holiday) {
 $ExactWorkingDays = ($totalDays - ($sundays + $HolidayNotOnSunday));
 $attendancePercentage = round(($attendedDays / $ExactWorkingDays) * 100, 2);
 $DayPay = round($monthsalary / $totalDays_salaryCalculation, 2);
-$calculatedSalary = ($attendedDays > 9) ? round($totalWorkingDays * $DayPay) : 0;
+$calculatedSalary = ($attendedDays >= $minimumDayAttendance) ? round($totalWorkingDays * $DayPay) : 0;
 
 $dataArray = [
+    'minimumDayAttendance'=> $minimumDayAttendance,
     'month' => $month,
     'year' => $year,
     'totalDays_salaryCalculation' => $totalDays_salaryCalculation,
