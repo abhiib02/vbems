@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
+
+name: 🚀 Deploy website on push
+
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Deploy')  # ✅ Only run if commit message has "Deploy"
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
+
+      - name: 📂 Sync files
+        uses: abhiib02/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftp.samkirkland.com
+          username: myFtpUserName
+          password: ${{ secrets.ftp_password }}

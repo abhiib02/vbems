@@ -1,0 +1,162 @@
+
+.calendarGrid {
+         display: grid;
+         grid-template-columns: repeat(7, 1fr);
+         gap: 5px;
+     }
+
+     .calendarGrid div:nth-child(8):not(.empty):not(.leave):not(.sandwich),
+     .calendarGrid div:nth-child(15):not(.empty):not(.leave):not(.sandwich),
+     .calendarGrid div:nth-child(22):not(.empty):not(.leave):not(.sandwich),
+     .calendarGrid div:nth-child(29):not(.empty):not(.leave):not(.sandwich),
+     .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich) {
+         background: #F6465D;
+     }
+
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(8):not(.empty):not(.leave):not(.sandwich),
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(15):not(.empty):not(.leave):not(.sandwich),
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(22):not(.empty):not(.leave):not(.sandwich),
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(29):not(.empty):not(.leave):not(.sandwich),
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich) {
+         background: #F6465D88;
+     }
+
+     .calendarGrid .day .strength,
+     .calendarGrid .day .daydetail,
+     .calendarGrid .day .timing {
+         @media (width < 768px) {
+             display: none;
+         }
+     }
+
+     .calendarGrid .day {
+
+         padding: 10px;
+         border: 1px solid #ccc;
+         border-radius: 10px;
+     }
+
+     .calendarGrid .day-name {
+         padding: 10px;
+         margin-bottom: 10px;
+         text-align: center;
+         color: #555;
+         border: 0px solid #ccc;
+        border-radius: 10px;
+         font-weight: bold;
+     }
+
+     html[data-bs-theme="dark"] .calendarGrid .day-name {
+         color: #fff;
+     }
+
+     .calendarGrid .empty {
+         border: none;
+     }
+
+/*------------*/
+
+.present{
+    background: #2EBD85 !important;    
+}
+html[data-bs-theme="dark"] .present {
+    background: #2EBD8588 !important;   
+    color: #000;
+    @media (width < 768px){
+        background: #2EBD8588 !important;   
+    }
+}
+.red {
+    background: #F6465D !important;
+}
+.leave {
+    background: #ffb3bd !important;
+}
+html[data-bs-theme="dark"] .leave {
+     background: #ffb3bd88 !important;
+}
+
+.Sandwich {
+    background: #FE9738;
+}
+html[data-bs-theme="dark"] .Sandwich {
+    color:#000;
+}
+
+.holiday {
+    background: #0DCAF0 !important;
+}
+html[data-bs-theme="dark"] .holiday {
+    background: #0DCAF088 !important;
+    color: #000000;
+}
+
+.leave.pl,
+.leave.PL {
+    background: #d1e7dd !important;
+}
+html[data-bs-theme="dark"] .leave.pl, html[data-bs-theme="dark"] .leave.PL {
+    background: #d1e7dd88 !important; 
+}
+.leave.Sandwich {
+    background: #FE9738 !important;
+}
+html[data-bs-theme="dark"] .leave.Sandwich {
+    background: #FE973888 !important; 
+}
+.holiday.Sandwich {
+    background: linear-gradient(90deg, #FE9738, #0DCAF0, #FE9738) !important;
+}
+html[data-bs-theme="dark"] .holiday.Sandwich {
+    background: linear-gradient(90deg, #FE973888, #0DCAF088, #FE973888) !important;   
+}
+.holiday.leave {
+    background: linear-gradient(90deg, #ffb3bd, #0DCAF0, #ffb3bd) !important;
+}
+html[data-bs-theme="dark"] .holiday.leave {
+    background: linear-gradient(90deg, #ffb3bd88, #0DCAF088, #ffb3bd88) !important;
+}
+
+.day {
+    position: relative;
+}
+
+.day {
+    background-color: #f0f0f0;
+    background: linear-gradient(var(--degree,45deg), #2EBD85 var(--strength), rgba(255, 255, 255, 1) var(--strength));
+    background-repeat: no-repeat;
+    &:hover {
+        background-color: #f0f0f0;
+    }
+}
+html[data-bs-theme="dark"] .day {
+    background-color: #000000;
+    background: linear-gradient(var(--degree,45deg), #2EBD8588 var(--strength), rgba(0, 0, 0, 1) var(--strength));
+    color:#fff;
+    background-repeat: no-repeat;
+    &:hover {
+        background-color: #000000;
+    }
+}
+
+.joining {
+    &:after {
+        content: '⭐';
+        position: absolute;
+        top: 1px;
+        right: 1px;
+        animation: rotate 5s linear infinite;
+    }
+}
+
+
+
+@keyframes rotate {
+    0% {
+        rotate: 0deg;
+    }
+
+    100% {
+        rotate: 360deg;
+    }
+}

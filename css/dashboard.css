@@ -1,0 +1,13 @@
+.Approved,
+.green {
+    background: #2EBD85 !important;
+}
+
+.Pending {
+    background: #FCD535 !important;
+}
+
+.Rejected,
+.red {
+    background: #F6465D !important;
+}

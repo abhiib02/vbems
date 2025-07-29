@@ -1,0 +1,37 @@
+dialog,
+dialog::backdrop {
+  opacity: 0;
+
+  @media (prefers-reduced-motion: no-preference) {
+    transition: display 0.5s allow-discrete, overlay 0.5s allow-discrete,
+      opacity 0.5s ease, transform 0.5s ease;
+  }
+}
+
+dialog {
+  transform: translateY(30px);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+dialog[open] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+dialog[open]::backdrop {
+  opacity: 0.8;
+}
+
+@starting-style {
+  dialog[open],
+  dialog[open]::backdrop {
+    opacity: 0;
+  }
+
+  dialog[open] {
+    transform: translateY(30px);
+  }
+}

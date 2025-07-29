@@ -1,0 +1,164 @@
+:root{
+ --font-family:"Roboto Condensed", sans-serif;
+ --bs-font-sans-serif:var(--font-family);
+ --bs-body-font-family:var(--font-family);
+ --font-size:14px;
+}
+body{
+font-family: var(--bs-body-font-family) !important;
+font-size: var(--font-size);
+overflow-x: hidden;
+}
+@view-transition {
+  navigation: auto;
+}
+main{
+    view-transition-name: maincontent;
+}
+
+::view-transition-old(maincontent) {
+    /* Custom Animation */
+    animation: fade-out-bck 0.01s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+  }
+::view-transition-new(maincontent) {
+    /* Custom Animation */
+    animation: fade-in-bck 0.01s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  }
+
+
+@keyframes fade-out-bck {
+  0% {
+    -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: translateZ(-80px);
+            transform: translateZ(-80px);
+    opacity: 0;
+  }
+}
+@keyframes fade-in-bck {
+  0% {
+    -webkit-transform: translateZ(80px);
+            transform: translateZ(80px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+    opacity: 1;
+  }
+}
+/*-----------------------------------------------*/
+
+.hide-on-mobile{
+    @media (width < 600px) {
+        display:none;
+    }
+}
+.hide-on-tab{
+    @media (601px < width < 992px) {
+        display:none;
+    }
+}
+.hide-on-desktop{
+    @media (width > 992px) {
+        display:none;
+    }
+}
+
+
+
+.custom-bg {
+    background: var(--color, #00000088) var(--url);
+    background-size: var(--size, cover);
+    background-repeat: var(--repeat, no-repeat);
+    background-blend-mode: overlay;
+    background-position: var(--position, center);
+    background-attachment: var(--attachment, fixed);
+}
+
+.maingradient{
+    background: linear-gradient(45deg,rgba(48, 107, 184, 1) 0%, rgba(254, 184, 1, 1) 100%);
+}
+
+@property --gre-stop {
+    syntax: "<number>";
+    inherits: false;
+    initial-value: 100;
+  }
+  @keyframes gre-change {
+    0%{
+        --gre-stop:0;
+    }
+    100%{
+        --gre-stop:100;
+    }
+  }
+  
+.main-diagonal-bg{
+    /*animation: gre-change 1s infinite alternate;*/
+    background: linear-gradient(calc(var(--gre-stop) * 1deg),rgb(97, 97, 80) calc(var(--gre-stop) * 1%), rgba(255, 255, 255, 1) 0%);
+}
+
+.vh100-sub-navbar{
+    min-height: calc(100svh - 56px);
+}
+.vh100{
+    min-height: 100svh;
+}
+.grid-center{
+    display: grid;
+    place-items: center;
+}
+.autosize {
+    field-sizing: content;
+  }
+.scale{
+    scale:1.1;
+    filter: drop-shadow(0px 0px 3px #333);
+    z-index: 10;
+}
+
+
+.sidebar{
+  width: 60px;
+}
+
+.mobile-nav{
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    z-index: 9999;
+    height: 50px;
+
+}
+.mobile-nav .dashboard-link{
+    width: 100%;
+    color:white;
+    text-decoration: none;
+}
+.mobile-nav .dashboard-link.active{
+    outline: 1px solid #fff;
+    border-radius: 5px;
+    &:after{
+        content:attr(data-linkName);
+        display: block;
+        font-size: 0.5rem;
+        font-family: var(--bs-body-font-family)
+    }
+}
+.height-on-mobile{
+    height: auto;
+    @media (width < 768px) {
+        max-height: 81svh;
+    }
+    @media (768px < width < 992px) {
+        max-height: 88svh;
+    }
+    
+}
+.table>:not(caption)>*>*{
+      border-bottom-width: 0px;
+}
