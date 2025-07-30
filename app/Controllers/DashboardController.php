@@ -163,6 +163,7 @@ class DashboardController extends BaseController {
     public function EmployeeLeaveRequestForm() {
         $this->data['title'] = 'Leave Request Form';
         $dept_id = $this->UserModel->getDepartmentIDByUserID($this->data['id']);
+        $this->data['leavecredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']);
         $this->data['department_leaves'] = $this->LeaveModel->getLeavesAfterTodayByDepartmentID($dept_id);
         $this->data['department_name'] = $this->DepartmentModel->getDepartmentNameByDepartmentID($dept_id);
         $this->data['department_leave_person_count'] = $this->DepartmentModel->getLeavePersonsCountByDepartmentID($dept_id);

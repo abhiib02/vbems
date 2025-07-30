@@ -34,12 +34,62 @@
                             </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-warning">Submit Request</button>
+                    <?php if ($leavecredit > 1): ?>
+                        <button type="submit" class="btn btn-warning">Submit Request</button>
+                    <?php elseif ($leavecredit < 1): ?>
+                        <button type="button" onclick="openDialogModal('leaveCreditAlert');" class="btn btn-warning">Submit Request</button>
+                        <dialog id="leaveCreditAlert" class="col-lg-4 border-0 rounded shadow p-0">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="align-content-center">
+                                            <p class="fw-bold fs-6 m-0">Leave Credit Alert</p>
+                                        </div>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="closeDialog()">X</button>
+                                    </div>
+                                </div>
+                                <div class="card-body border-start border-5 border-danger">
+                                    <div class=" d-flex align-items-start p-4" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill fs-3 text-warning me-3"></i>
+                                        <div>
+                                            <h5 class="mb-1">Leave Request Not Allowed</h5>
+                                            <p class="mb-0">
+                                                Your current leave credit is <strong>0</strong>. You are not eligible to apply for leave at this time.
+                                                <br>
+                                                <strong>If leave is absolutely necessary</strong>, the requested days will be counted as <strong>double</strong>
+                                                and the equivalent amount will be deducted from your salary.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="d-flex justify-content-between">
+                                        <button type="button" class="btn btn-outline-success btn-sm" onclick="closeDialog()">Cancel</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="closeDialog()">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </dialog>
+                        <div class="alert alert-danger d-flex align-items-start p-4 mt-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill fs-3 text-warning me-3"></i>
+                            <div>
+                                <h5 class="mb-1">Leave Request Not Allowed</h5>
+                                <p class="mb-0">
+                                    Your current leave credit is <strong>0</strong>. You are not eligible to apply for leave at this time.
+                                    <br>
+                                    <strong>If leave is absolutely necessary</strong>, the requested days will be counted as <strong>double</strong>
+                                    and the equivalent amount will be deducted from your salary.
+                                </p>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </form>
+
             </div>
         </div>
     </div>
     <div class="col-md-6 col-lg-4">
+
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="fw-bold m-0"><?= $department_name ?> Department Leaves </h5>
