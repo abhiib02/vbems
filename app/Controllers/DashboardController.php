@@ -179,6 +179,8 @@ class DashboardController extends BaseController {
 
         $this->data['salary'] = $this->SalaryModel->getSalaryByUserID($this->data['id']);
         $this->data['monthsalary'] = $this->AttendanceModel->getBaseSalaryofMonthYearbyUserid($this->data['id'], $this->data['month'], $this->data['year']);
+        $this->data['half_days'] = $this->AttendanceModel->getAllHalfDayattendanceofUserByMonthYear($this->data['id'], $this->data['month'], $this->data['year']);
+        $this->data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['attendance'] = $this->AttendanceModel->getAllattendanceofUserByMonthYear($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
         $this->data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
@@ -203,6 +205,8 @@ class DashboardController extends BaseController {
 
         [$data['month'], $data['year']] = $this->getRequestMonthYear();
         $data['employeeYearlyAttendance'] = json_encode($this->AttendanceModel->getAnnualAttendedDayCountByMonthWise($data['id'],$data['year']));
+        $data['half_days'] = $this->AttendanceModel->getAllHalfDayattendanceofUserByMonthYear($data['id'], $data['month'], $data['year']);
+        $data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($data['id'], $data['month'], $data['year']);
         $data['attendance'] = $this->AttendanceModel->getAllattendanceofUserByMonthYear($data['id'], $data['month'], $data['year']);
         $data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($data['month'], $data['year']);
         $data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($data['id'], $data['month'], $data['year']);
@@ -223,6 +227,8 @@ class DashboardController extends BaseController {
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
 
         $this->data['attendance'] = $this->AttendanceModel->getAllattendanceofUserByMonthYear($id, $this->data['month'], $this->data['year']);
+        $this->data['half_days'] = $this->AttendanceModel->getAllHalfDayattendanceofUserByMonthYear($id, $this->data['month'], $this->data['year']);
+        $this->data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($id, $this->data['month'], $this->data['year']);
         $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
         $this->data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($id, $this->data['month'], $this->data['year']);
         $this->data['employeename'] = $this->UserModel->getUserNameByID($id);

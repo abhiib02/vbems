@@ -18,15 +18,14 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Attended Days <b>(<?= $attendedDays ?>)</b>
-                        <?= ($paid_leaves != 0) ? "+ Paid Leave Days <b>($paid_leaves)</b>" : ''; ?> +
-                        Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b> = Total Days
+                    <td>Full Days <b>(<?= $fullDay ?>)</b><?= ($paid_leaves != 0) ? "+ Paid Leave Days <b>($paid_leaves)</b>" : ''; ?> +
+                        Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b> + Half Day <b>(<?= $halfDay ?> / 2) </b> = Total Days
                         <b>(<?= $totalWorkingDays ?> Days)</b>
                     </td>
                 </tr>
                 <tr>
                     <td>Calculated Salary = <b>₹<?= $calculatedSalary ?>
-                            <?= ($attendedDays <= $minimumDayAttendance) ? '(15 Days Attendance Required)' : '' ?></b>
+                            <?= ($attendedDays < $minimumDayAttendance) ? '(15 Days Attendance Required)' : '' ?></b>
                         <?php if (($attendedDays > $minimumDayAttendance)): ?> | <b>(<?= $totalWorkingDays ?> Days)</b> x
                             <b>(<?= $DayPay ?> Pay/day)</b><?php endif; ?>
                     </td>

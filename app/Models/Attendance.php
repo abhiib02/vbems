@@ -138,6 +138,32 @@ class Attendance extends Model {
         $result = $query->getResult();
         return $result;
     }
+    public function getAllHalfDayAttendanceofUserByMonthYear($USER_ID, $MONTH, $YEAR) {
+
+        $builder = $this->db->table($this->table);
+        $builder->select('*');
+        $builder->where('USER_ID', $USER_ID);
+        $builder->where('YEAR(DATE) =', $YEAR, false);
+        $builder->where('MONTH(DATE) =', $MONTH, false);
+        $builder->where('HALF_DAY',1);
+        $builder->orderBy('ID', 'desc');
+        $query = $builder->get();
+        $result = $query->getResult();
+        return $result;
+    }
+    public function getAllFullDayAttendanceofUserByMonthYear($USER_ID, $MONTH, $YEAR) {
+
+        $builder = $this->db->table($this->table);
+        $builder->select('*');
+        $builder->where('USER_ID', $USER_ID);
+        $builder->where('YEAR(DATE) =', $YEAR, false);
+        $builder->where('MONTH(DATE) =', $MONTH, false);
+        $builder->where('HALF_DAY', 0);
+        $builder->orderBy('ID', 'desc');
+        $query = $builder->get();
+        $result = $query->getResult();
+        return $result;
+    }
     public function getBaseSalaryofMonthYearbyUserid($USER_ID, $MONTH, $YEAR) {
 
         $builder = $this->db->table($this->table);
