@@ -74,6 +74,16 @@ class Holiday extends Model {
         $result = $query->getResult();
         return $result;
     }
+    public function getAllNonSundayHolidaysCountofMonthYear($month, $year) {
+
+        $builder = $this->db->table($this->table);
+        $builder->select("*");
+        $builder->where('MONTH(DATE)', $month);
+        $builder->where('YEAR(DATE)', $year);
+        $builder->where('DAYOFWEEK(DATE) !=', 1);
+        $count = $builder->countAllResults();
+        return $count;
+    }
     public function getAllHolidaysofYear($year) {
         $sql = "
             SELECT 

@@ -285,6 +285,15 @@ class User extends Model {
         $result = $query->getResult();
         return $result;
     }
+    public function getAllEmployeesID() {
+
+        $builder = $this->db->table($this->table);
+        $builder->select('ID');
+        $builder->where('ROLE', 0);
+        $query = $builder->get();
+        $result = $query->getResult();
+        return $result;
+    }
     public function getAllEmployeesCount() {
 
         $builder = $this->db->table($this->table);

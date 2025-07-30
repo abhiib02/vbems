@@ -32,6 +32,7 @@ $routes->group('', function ($routes) {
 
     $routes->get('resetform', 'UserController::resetform');
     $routes->post('reset', 'UserController::reset');
+    
 });
 
 /*------------------- Employee Protected Routes ------------------*/
@@ -48,7 +49,7 @@ $routes->group('', ['filter' => 'AuthGuard'], function ($routes) {
 $routes->group('', ['filter' => 'AdminAuthGuard'], function ($routes) {
     // Dashboard
     $routes->get('dashboard', 'DashboardController::AdminDashboard', ['as' => 'admin.dashboard']);
-
+    
     // Employee
     $routes->get('employee-list', 'DashboardController::employeeList', ['as' => 'employee.list']);
     $routes->get('employee-attendance/(:num)', 'DashboardController::employeeAttendance/$1');
@@ -86,3 +87,5 @@ $routes->group('', ['filter' => 'AdminAuthGuard'], function ($routes) {
 
 /*------------------- Public Attendance ------------------*/
 $routes->get('mark-attendance/(:any)', 'AttendanceController::AttendanceEntryProcess/$1');
+
+$routes->get('m-lc-calc', 'AttendanceController::monthlyLeaveCreditCalcforEachEmployee');

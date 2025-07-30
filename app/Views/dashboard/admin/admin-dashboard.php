@@ -52,7 +52,8 @@
             </div>
         </div>
     </div>
-
+</div>
+<div class="row">
     <div class="col-md-5 col-lg-5 ">
         <div class="card">
             <div class="card-header">
@@ -67,11 +68,11 @@
                                 <i class="ri-login-circle-line"></i> <?= $entry->CREATED_ON ?>
                                 <?= ($entry->PUNCH_OUT) ? ' | <i class="ri-logout-circle-r-line"></i> ' . $entry->UPDATED_AT : ''; ?>
                             </div>
-                            <?php if($entry->PUNCH_OUT):?>
-                            <span class="fs-3">✅</span>
-                            <?php else:?>
-                            <span class="fs-3">✔</span>
-                            <?php endif;?>
+                            <?php if ($entry->PUNCH_OUT): ?>
+                                <span class="fs-3">✅</span>
+                            <?php else: ?>
+                                <span class="fs-3">✔</span>
+                            <?php endif; ?>
                         </li>
                     <?php endforeach; ?>
                 </ol>
@@ -88,8 +89,6 @@
             </div>
         </div>
     </div>
-
-
 </div>
 
 <script>

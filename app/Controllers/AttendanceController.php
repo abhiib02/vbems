@@ -61,9 +61,9 @@ class AttendanceController extends BaseController {
 
             if ($hoursPassedAfterEntry > $hoursTimeforPunchout) {
                 $this->AttendanceModel->setAttendancePunchOutByUserID($user_id, $date);
-                $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.login');
+                return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.login');
             } else {
-                $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
             }
         }
         if (!$isEntryExist) {
@@ -92,12 +92,30 @@ class AttendanceController extends BaseController {
             $this->addDayLeaveCredit($user_id);
             $this->checkandCreateSandwichLeave($user_id, $date);
 
-            $this->RedirectWithtoast('Attendance Marked', 'Success', '');
-            return 1;
+            return $this->RedirectWithtoast('Attendance Marked', 'Success', '');
         }
         return 0;
     }
 
+
+    public function monthlyLeaveCreditCalcforEachEmployee() {
+        $employeesIDArr = $this->UserModel->getAllEmployeesID();
+        $today = date('Y-m-d');
+        $date = new \DateTime($today);
+        $today_date = (int)$date->format('d');
+        $previousDate = $date->modify('-1 day');
+        $previousDate_Year = $previousDate->format('Y');
+        $previousDate_Month = $previousDate->format('m');
+        $previousDate = $previousDate->format('Y-m-d');
+        
+        if ($today_date != 1) {
+            return $this->RedirectWithtoast('Today is First Day of month', 'Success', '/login');
+        }
+        foreach($employeesIDArr as $employee){
+            $this->subtractDayLeaveCredit($employee->ID, $previousDate_Month, $previousDate_Year);
+        }
+        return $this->RedirectWithtoast('Leave Credit Recalculated', 'Success', '/login');
+    }
     //----------------- Protected Class Function -----------------------//
 
     protected function addDayLeaveCredit($user_id) {
@@ -107,14 +125,42 @@ class AttendanceController extends BaseController {
 
         $totalDays = (int)$date->format('t');
         $totalSundays = $this->getTotalSundaysInMonth($month, $year);
-
-        $workingDays = $totalDays - $totalSundays;
+        $totalNonSundayHoliday = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($month, $year);
+        $workingDays = $totalDays - ($totalSundays + $totalNonSundayHoliday);
 
         $this->LEAVE_CREDIT_PER_ATTENDANCE = (1.5 / $workingDays);
 
         $leaveCredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
         $leaveCredit = $leaveCredit + $this->LEAVE_CREDIT_PER_ATTENDANCE;
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leaveCredit);
+    }
+
+    protected function subtractDayLeaveCredit($user_id,$month,$year) {
+
+        $date = new \DateTime("$year-$month-01");
+        
+        $totalDays = (int)$date->format('t');
+        $totalSundays = $this->getTotalSundaysInMonth($month, $year);
+        $totalNonSundayHoliday = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($month, $year);
+        $workingDays = $totalDays - ($totalSundays + $totalNonSundayHoliday);
+
+        $attendedDays = count($this->AttendanceModel->getAllAttendanceofUserByMonthYear($user_id, $month, $year));
+
+        $totalAbsentDays = $workingDays - $attendedDays;
+
+        $this->LEAVE_CREDIT_PER_ATTENDANCE = (1.5 / $workingDays);
+
+        $totalSubtractedLeaveCredit = $totalAbsentDays * $this->LEAVE_CREDIT_PER_ATTENDANCE;
+
+        $leaveCredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
+
+        if(($leaveCredit - $totalSubtractedLeaveCredit) >= 0){
+            $leaveCredit = $leaveCredit - $totalSubtractedLeaveCredit;
+        }else{
+            $leaveCredit = 0;
+        }
+        $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leaveCredit);
+        
     }
 
     public function checkandCreateSandwichLeave($user_id, $date) {
