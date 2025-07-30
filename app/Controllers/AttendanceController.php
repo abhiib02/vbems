@@ -21,6 +21,9 @@ class AttendanceController extends BaseController {
         $LeaveService;
     public $data = [];
     public $LEAVE_CREDIT_PER_ATTENDANCE;
+    public $LEAVE_CREDIT_PER_MONTH = 1.5;
+    public $HALFDAY_ENTRY_TIME = '11:00:00';
+    public $HALFDAY_EXIT_TIME = '17:00:00';
 
     public function __construct() {
         $this->session = Services::session();
@@ -32,7 +35,7 @@ class AttendanceController extends BaseController {
         $this->HolidayModel = new Holiday();
         $this->LeaveCreditModel = new LeaveCredit();
         $this->SalaryModel = new Salary();
-        
+
         $this->data['TotalEmployeeOnDate'] = $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d'));
     }
 
@@ -44,7 +47,7 @@ class AttendanceController extends BaseController {
     }
 
     public function AttendanceEntryProcess($USER_BIOMETRIC_ID) {
-        
+
         if (!($this->UserModel->isBiometricIDExist($USER_BIOMETRIC_ID))) {
             return $this->RedirectWithtoast('Biometric ID Doesnt Exist', 'danger', 'auth.login');
         }
@@ -56,12 +59,14 @@ class AttendanceController extends BaseController {
 
         if ($isEntryExist && !($isEntryPunchedOut)) {
 
+            // Check For half day on Punch out
             $exitTime = new \DateTime(); // now
-            $cutoff = new \DateTime(date('Y-m-d') . ' 17:00:00');
+            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_ENTRY_TIME);
+
             if ($exitTime < $cutoff) {
                 $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
             }
-            
+
             $hoursTimeforPunchout = 1;
             $hoursPassedAfterEntry = $this->hoursPassedAfterEntry($user_id, $date);
 
@@ -113,16 +118,17 @@ class AttendanceController extends BaseController {
         $previousDate_Year = $previousDate->format('Y');
         $previousDate_Month = $previousDate->format('m');
         $previousDate = $previousDate->format('Y-m-d');
-        
+
         if ($today_date != 1) {
             return $this->RedirectWithtoast('Today is First Day of month', 'Success', '/login');
         }
-        foreach($employeesIDArr as $employee){
+        foreach ($employeesIDArr as $employee) {
             $this->subtractDayLeaveCredit($employee->ID, $previousDate_Month, $previousDate_Year);
         }
         return $this->RedirectWithtoast('Leave Credit Recalculated', 'Success', '/login');
     }
     //----------------- Protected Class Function -----------------------//
+
 
     protected function addDayLeaveCredit($user_id) {
         $month = date('m');
@@ -134,39 +140,37 @@ class AttendanceController extends BaseController {
         $totalNonSundayHoliday = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($month, $year);
         $workingDays = $totalDays - ($totalSundays + $totalNonSundayHoliday);
 
-        $this->LEAVE_CREDIT_PER_ATTENDANCE = (1.5 / $workingDays);
+        $this->LEAVE_CREDIT_PER_ATTENDANCE = ($this->LEAVE_CREDIT_PER_MONTH / $workingDays);
 
         $leaveCredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
         $leaveCredit = $leaveCredit + $this->LEAVE_CREDIT_PER_ATTENDANCE;
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leaveCredit);
     }
 
-    protected function subtractDayLeaveCredit($user_id,$month,$year) {
+    protected function subtractDayLeaveCredit($user_id, $month, $year) {
 
         $date = new \DateTime("$year-$month-01");
-        
+
         $totalDays = (int)$date->format('t');
         $totalSundays = $this->getTotalSundaysInMonth($month, $year);
         $totalNonSundayHoliday = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($month, $year);
         $workingDays = $totalDays - ($totalSundays + $totalNonSundayHoliday);
-
         $attendedDays = count($this->AttendanceModel->getAllAttendanceofUserByMonthYear($user_id, $month, $year));
 
         $totalAbsentDays = $workingDays - $attendedDays;
 
-        $this->LEAVE_CREDIT_PER_ATTENDANCE = (1.5 / $workingDays);
+        $this->LEAVE_CREDIT_PER_ATTENDANCE = ($this->LEAVE_CREDIT_PER_MONTH / $workingDays);
 
         $totalSubtractedLeaveCredit = $totalAbsentDays * $this->LEAVE_CREDIT_PER_ATTENDANCE;
 
         $leaveCredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
 
-        if(($leaveCredit - $totalSubtractedLeaveCredit) >= 0){
+        if (($leaveCredit - $totalSubtractedLeaveCredit) >= 0) {
             $leaveCredit = $leaveCredit - $totalSubtractedLeaveCredit;
-        }else{
+        } else {
             $leaveCredit = 0;
         }
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leaveCredit);
-        
     }
 
     public function checkandCreateSandwichLeave($user_id, $date) {
@@ -224,7 +228,7 @@ class AttendanceController extends BaseController {
             //log_message('info', 'Already Notified Leave on Saturday and Monday');
             return 0;
         }
-        if (($presentOnPrevMonday === 0) && ($ApprovedPrevSaturdayLeave === 0)) {            
+        if (($presentOnPrevMonday === 0) && ($ApprovedPrevSaturdayLeave === 0)) {
             $reason = 'Saturday Notified & Monday Unattended';
             //log_message('info', 'Saturday Notified & Monday Unattended');
             $this->LeaveService->CreateLeave($user_id, $dept_id, $prevSaturdayDate, $prevMondayDate, $reason);
@@ -277,9 +281,10 @@ class AttendanceController extends BaseController {
             'TOTAL_USERCOUNT' => $this->AttendanceModel->getTotalAttendeesonDate($date),
             'BASE_SALARY' => $this->SalaryModel->getSalaryByUserID($user_id),
         ];
+        // Check For half day on Punch in
         $entryTime = new \DateTime(); // now
-        $cutoff = new \DateTime(date('Y-m-d') . ' 11:00:00');
-        if($entryTime > $cutoff){
+        $cutoff = new \DateTime(date('Y-m-d')  . ' ' . $this->HALFDAY_ENTRY_TIME);
+        if ($entryTime > $cutoff) {
             $data['HALF_DAY'] = 1;
         }
         return $data;
@@ -287,4 +292,3 @@ class AttendanceController extends BaseController {
     //---------------- Protected Class Function End-----------------------//
 
 }
-
