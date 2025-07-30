@@ -9,7 +9,8 @@
      .calendarGrid div:nth-child(15):not(.empty):not(.leave):not(.sandwich),
      .calendarGrid div:nth-child(22):not(.empty):not(.leave):not(.sandwich),
      .calendarGrid div:nth-child(29):not(.empty):not(.leave):not(.sandwich),
-     .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich) {
+     .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich),
+     .calendarGrid div:nth-child(43):not(.empty):not(.leave):not(.sandwich) {
          background: #F6465D;
      }
 
@@ -17,7 +18,8 @@
      html[data-bs-theme="dark"] .calendarGrid div:nth-child(15):not(.empty):not(.leave):not(.sandwich),
      html[data-bs-theme="dark"] .calendarGrid div:nth-child(22):not(.empty):not(.leave):not(.sandwich),
      html[data-bs-theme="dark"] .calendarGrid div:nth-child(29):not(.empty):not(.leave):not(.sandwich),
-     html[data-bs-theme="dark"] .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich) {
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(36):not(.empty):not(.leave):not(.sandwich),
+     html[data-bs-theme="dark"] .calendarGrid div:nth-child(43):not(.empty):not(.leave):not(.sandwich) {
          background: #F6465D88;
      }
 

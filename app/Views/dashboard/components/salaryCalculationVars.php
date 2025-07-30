@@ -11,16 +11,9 @@ $halfDay = count($half_days);
 $fullDay = count($full_days);
 $totalWorkingDays = (($fullDay + ($halfDay/2)) + $paid_leaves + ($sundays - ($sundays_in_leaves + $sundayBeforeJoining)));
 $coutable_sunday = $sundays - ($sundays_in_leaves + $sundayBeforeJoining);
-$HolidayNotOnSunday = 0;
+$HolidayNotOnSunday = $nonSundayHolidays;
 $minimumDayAttendance = 15;
 
-foreach ($Holidays as $holiday) {
-    $holidayDate = new DateTime($holiday->DATE);
-    $HolidayDateDay = $holidayDate->format('w');
-    if ($HolidayDateDay != 0) {
-        $HolidayNotOnSunday++;
-    }
-}
 $ExactWorkingDays = ($totalDays - ($sundays + $HolidayNotOnSunday));
 $attendancePercentage = round(($attendedDays / $ExactWorkingDays) * 100, 2);
 $DayPay = round($monthsalary / $totalDays_salaryCalculation, 2);

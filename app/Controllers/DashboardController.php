@@ -183,6 +183,7 @@ class DashboardController extends BaseController {
         $this->data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['attendance'] = $this->AttendanceModel->getAllattendanceofUserByMonthYear($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
+        $this->data['nonSundayHolidays'] = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($this->data['month'], $this->data['year']);
         $this->data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['sundays_in_leaves'] = $this->LeaveModel->getSumofSundayinApprovedLeavesofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['sundayBeforeJoining'] = $this->countSundaysBeforeDate($this->UserModel->getUserCreatedDate($this->data['id']), $this->data['month'], $this->data['year']);
@@ -209,6 +210,7 @@ class DashboardController extends BaseController {
         $data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($data['id'], $data['month'], $data['year']);
         $data['attendance'] = $this->AttendanceModel->getAllattendanceofUserByMonthYear($data['id'], $data['month'], $data['year']);
         $data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($data['month'], $data['year']);
+        $data['nonSundayHolidays'] = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($data['month'], $data['year']);
         $data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($data['id'], $data['month'], $data['year']);
         $data['employeename'] = $this->UserModel->getUserName($data['email']);
         $data['sundayBeforeJoining'] = $this->countSundaysBeforeDate($this->UserModel->getUserCreatedDate($data['id']), $data['month'], $data['year']);
@@ -230,6 +232,7 @@ class DashboardController extends BaseController {
         $this->data['half_days'] = $this->AttendanceModel->getAllHalfDayattendanceofUserByMonthYear($id, $this->data['month'], $this->data['year']);
         $this->data['full_days'] = $this->AttendanceModel->getAllFullDayattendanceofUserByMonthYear($id, $this->data['month'], $this->data['year']);
         $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
+        $this->data['nonSundayHolidays'] = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($this->data['month'], $this->data['year']);
         $this->data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($id, $this->data['month'], $this->data['year']);
         $this->data['employeename'] = $this->UserModel->getUserNameByID($id);
         $this->data['sundayBeforeJoining'] = $this->countSundaysBeforeDate($this->UserModel->getUserCreatedDate($id), $this->data['month'], $this->data['year']);
