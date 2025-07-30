@@ -66,6 +66,17 @@ html[data-bs-theme="dark"] .present {
         background: #2EBD8588 !important;   
     }
 }
+.present.halfday{
+    background: #20B2AA !important;    
+}
+html[data-bs-theme="dark"] .present.halfday {
+    background: #20B2AA88 !important;   
+    color: #000;
+    @media (width < 768px){
+        background: #20B2AA88 !important;   
+    }
+}
+
 .red {
     background: #F6465D !important;
 }

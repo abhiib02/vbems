@@ -24,7 +24,8 @@
                     <?php endforeach; ?>
 
                     <?php foreach ($attendance as $entry): ?>
-                        <data class="present-date" data-punchin="<?= $entry->CREATED_ON ?>" data-punchout="<?= $entry->UPDATED_AT ?>"
+
+                        <data class="present-date" data-punchin="<?= $entry->CREATED_ON ?>" data-halfday="<?= $entry->HALF_DAY ?>" data-punchout="<?= $entry->UPDATED_AT ?>"
                             data-present='<?= $entry->DATE ?>'><?= $entry->DATE ?></li>
                         <?php endforeach; ?>
 
@@ -37,6 +38,7 @@
 
                 <div>
                     <span class="badge green text-dark p-2">Marked Attendance</span>
+                    <span class="badge present halfday text-dark p-2">Half Day Marked Attendance</span>
                     <span class="badge Sandwich text-dark p-2">Sandwich Leave</span>
                     <span class="badge leave text-dark p-2">Approved Leave</span>
                     <span class="badge leave text-dark p-2 pl">Paid Leave</span>

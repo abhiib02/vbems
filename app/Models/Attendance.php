@@ -37,6 +37,15 @@ class Attendance extends Model {
         $builder->update();
         return $user_id;
     }
+    public function setAttendanceHalfDayByUserID($user_id, $date) {
+
+        $builder = $this->db->table($this->table);
+        $builder->where('DATE', $date);
+        $builder->where('USER_ID', $user_id);
+        $builder->set('HALF_DAY', 1);
+        $builder->update();
+        return $user_id;
+    }
     public function isEntryExist($date, $user_id) {
 
         $builder = $this->db->table($this->table);

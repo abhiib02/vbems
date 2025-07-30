@@ -22,7 +22,7 @@
                         <data class="holidaydate" data-holidaydate="<?= $holiday->DATE ?>" data-holiday="<?= $holiday->HOLIDAY ?>"><?= $holiday->DATE ?></data>
                     <?php endforeach; ?>
                     <?php foreach ($attendance as $entry): ?>
-                        <data class="present-date" data-punchin="<?= $entry->CREATED_ON ?>" data-punchout="<?= $entry->UPDATED_AT ?>" data-present='<?= $entry->DATE ?>'><?= $entry->DATE ?></data>
+                        <data class="present-date" data-punchin="<?= $entry->CREATED_ON ?>" data-halfday="<?= $entry->HALF_DAY ?>" data-punchout="<?= $entry->UPDATED_AT ?>" data-present='<?= $entry->DATE ?>'><?= $entry->DATE ?></data>
                     <?php endforeach; ?>
                     <?php foreach ($approvedLeaves as $leave): ?>
                         <data class="leave-date" data-leavedate="<?= $leave->FROM_DATE ?>" data-leavetype="<?= $leave->TYPE ?>" data-leavedays='<?= $leave->DAYS ?>' data-leavereason="<?= $leave->REASON ?>"><?= $leave->FROM_DATE ?></data>
@@ -30,6 +30,7 @@
                 </ul>
                 <div>
                     <span class="badge green text-dark p-2">Marked Attendance</span>
+                    <span class="badge present halfday text-dark p-2">Half Day Marked Attendance</span>
                     <span class="badge Sandwich text-dark p-2">Sandwich Leave</span>
                     <span class="badge leave text-dark p-2">Approved Leave</span>
                     <span class="badge leave text-dark p-2 pl">Paid Leave</span>

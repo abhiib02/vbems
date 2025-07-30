@@ -56,6 +56,12 @@ class AttendanceController extends BaseController {
 
         if ($isEntryExist && !($isEntryPunchedOut)) {
 
+            $exitTime = new \DateTime(); // now
+            $cutoff = new \DateTime(date('Y-m-d') . ' 17:00:00');
+            if ($exitTime < $cutoff) {
+                $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
+            }
+            
             $hoursTimeforPunchout = 1;
             $hoursPassedAfterEntry = $this->hoursPassedAfterEntry($user_id, $date);
 
@@ -264,12 +270,19 @@ class AttendanceController extends BaseController {
         return $count;
     }
     protected function prepareAttendanceData($user_id, $date) {
-        return [
+        $data = [
             'DATE' => $date,
+            'HALF_DAY' => 0,
             'USER_ID' => $user_id,
             'TOTAL_USERCOUNT' => $this->AttendanceModel->getTotalAttendeesonDate($date),
             'BASE_SALARY' => $this->SalaryModel->getSalaryByUserID($user_id),
         ];
+        $entryTime = new \DateTime(); // now
+        $cutoff = new \DateTime(date('Y-m-d') . ' 11:00:00');
+        if($entryTime > $cutoff){
+            $data['HALF_DAY'] = 1;
+        }
+        return $data;
     }
     //---------------- Protected Class Function End-----------------------//
 

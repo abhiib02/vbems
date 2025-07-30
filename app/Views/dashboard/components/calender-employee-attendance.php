@@ -85,9 +85,11 @@ $day = 1; // Counter to track day of month
             const index = parseInt(date.dataset.present.split('-')[2]) - 1;
             const punchin = date.dataset.punchin.split(' ')[1] || 'Yet to be Done';
             const punchout = date.dataset.punchout.split(' ')[1] || 'Yet to be Done';
+            const halfday = date.dataset.halfday;
             const dayElem = days[index];
 
             dayElem.classList.add('present');
+            (halfday == '1') ? dayElem.classList.add('halfday'):'';
             dayElem.querySelector('.timing').innerHTML = `${punchin} / ${punchout}`;
             dayElem.dataset.bsToggle = 'tooltip';
             dayElem.dataset.bsPlacement = 'top';
