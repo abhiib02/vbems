@@ -134,9 +134,9 @@ class AttendanceController extends BaseController {
 
             if ($hoursPassedAfterEntry > $hoursTimeforPunchout) {
                 $this->AttendanceModel->setAttendancePunchOutByUserID($user_id, $date);
-                return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.login');
+                return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.logout');
             } else {
-                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.logout');
             }
         }
         return 0;

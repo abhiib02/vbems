@@ -25,7 +25,7 @@ $routes->group('', function ($routes) {
 
     $routes->get('login', 'LoginController::index', ['as' => 'auth.login']);
     $routes->post('login-validation', 'LoginController::loginValidation');
-    $routes->get('logout', 'LoginController::logout');
+    $routes->get('logout', 'LoginController::logout', ['as' => 'auth.logout']);
 
     $routes->get('forgot_password_form', 'UserController::forgotpass', ['as' => 'user.forgot.password.form']);
     $routes->post('forgotpassword', 'UserController::forgotpassword', ['as' => 'user.forgot.password']);
