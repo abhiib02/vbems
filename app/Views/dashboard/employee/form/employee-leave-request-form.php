@@ -11,8 +11,12 @@
                         <div class="col-lg-8">
                             <div class="mb-3">
                                 <label for="from_to_date" class="form-label">From Date / To Date</label>
-                                <input type="text" id="datepicker" required class="form-control" id="from_to_date"
+                                <input type="text" id="datepicker" required class="form-control"
                                     name="from_to_date">
+                            </div>
+                            <div class="alert alert-danger" id="alertleavecredit" hidden role="alert">
+                                Your are Applying for <b><span id="diffInDays"></span></b> leave but your Leave Credit is <b><?= $leavecredit ?> Days.</b><br>
+                                The requested days will be counted as double and the equivalent amount will be deducted from your salary.
                             </div>
                         </div>
 
@@ -159,6 +163,35 @@
         };
     });
 </script>
+<script>
+    function checkLeaveCredit() {
+        const dateRange = document.getElementById('datepicker').value;
+        const alertbox = document.getElementById('alertleavecredit');
+        const leavedaysplaceholder = document.getElementById('diffInDays');
+
+        // Split into two dates
+        const [startStr, endStr] = dateRange.split("/");
+
+        // Convert DD-MM-YYYY to Date objects
+        function parseDate(str) {
+            const [day, month, year] = str.split("-").map(Number);
+            return new Date(year, month - 1, day); // month is 0-indexed
+        }
+
+        const startDate = parseDate(startStr);
+        const endDate = parseDate(endStr);
+
+        // Calculate difference in milliseconds and convert to days
+        const diffInMs = endDate - startDate;
+        const diffInDays = (diffInMs / (1000 * 60 * 60 * 24)) + 1;
+
+        if (<?= $leavecredit ?> < diffInDays) {
+            leavedaysplaceholder.textContent = (diffInDays > 1) ? diffInDays + ' Days' : diffInDays + ' Day';
+            alertbox.removeAttribute('hidden');
+        }
+
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@easepick/bundle@1.2.1/dist/index.umd.min.js"></script>
 <script>
     const picker = new easepick.create({
@@ -197,4 +230,9 @@
         ],
 
     })
+</script>
+<script>
+    picker.on('select', () => {
+        checkLeaveCredit()
+    });
 </script>
