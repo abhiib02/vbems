@@ -1,13 +1,16 @@
 <dialog id="calculatedsalary-attendance" class="col-lg-4 position-relative border-0 rounded shadow p-0">
     <div class="card">
         <div class="card-header">
-            <h5>
-                <span class="fw-bold">Calculated Salary of <?= getMonthName($month) ?></span>
-            </h5>
-            <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
-                month. )</small>
-            <button class="position-absolute btn btn-sm btn-outline-secondary" style="top:10px; right:10px;"
-                onclick="closeDialog()">X</button>
+            <div class="d-flex justify-content-between">
+                <div class="align-content-center">
+                    <span class="fw-bold fs-5">Calculated Salary of <?= getMonthName($month) ?></span><br>
+                    <?php if ($attendedDays < $minimumDayAttendance): ?>
+                        <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
+                            month. )</small>
+                    <?php endif; ?>
+                </div>
+                <button class=" btn btn-sm btn-outline-secondary" onclick="closeDialog()">X</button>
+            </div>
         </div>
         <div class="card-body">
 
@@ -20,7 +23,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <ul class="m-0">
+                        <ul class="m-0" >
                             <li class="text-success">Full Days <b>(<?= $fullDay ?>)</b></li>
                             <?= ($paid_leaves != 0) ? "<li class='text-success'> Paid Leave Days <b>($paid_leaves)</b></li>" : ''; ?>
                             <li class="text-success">Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b></li>
@@ -59,8 +62,8 @@
     <div class="card-body">
         <div class="fs-3"><b>₹ <?= $calculatedSalary ?></b></div>
         <?php if ($attendedDays < $minimumDayAttendance): ?>
-        <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
-            month. )</small>
+            <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
+                month. )</small>
         <?php endif; ?>
     </div>
 </div>
