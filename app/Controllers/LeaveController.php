@@ -203,7 +203,7 @@ class LeaveController extends BaseController {
         $leavecredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
 
         if ($LeaveType != 'PL') {
-            $leavecredit = $leavecredit - $LeaveRequestData->DAYS;
+            $leavecredit = (($leavecredit - $LeaveRequestData->DAYS) < 0) ? 0 : ($leavecredit - $LeaveRequestData->DAYS);
         }
 
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leavecredit);

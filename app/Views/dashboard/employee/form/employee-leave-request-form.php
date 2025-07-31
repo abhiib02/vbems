@@ -34,7 +34,7 @@
                             </div>
                         </div>
                     </div>
-                    <?php if ($leavecredit > 1): ?>
+                    <?php if ($leavecredit >= 1): ?>
                         <button type="submit" class="btn btn-warning">Submit Request</button>
                     <?php elseif ($leavecredit < 1): ?>
                         <input type="hidden" name="zeroleavecredit" value="1" required>

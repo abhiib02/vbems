@@ -19,9 +19,17 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>( Full Days <b>(<?= $fullDay ?>)</b><?= ($paid_leaves != 0) ? "+ Paid Leave Days <b>($paid_leaves)</b>" : ''; ?> +
-                        Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b> + Half Day <b>(<?= $halfDay ?> / 2) </b> )  <?= ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != '') ? "- ( Zero Credit Leave <b>($zeroCreditLeaveDays x 2)</b>)" : ''; ?>=
-                        <b>(<?= $totalWorkingDays ?> Days)</b>
+                    <td>
+                        <ul class="m-0">
+                            <li class="text-success">Full Days <b>(<?= $fullDay ?>)</b></li>
+                            <?= ($paid_leaves != 0) ? "<li class='text-success'> Paid Leave Days <b>($paid_leaves)</b></li>" : ''; ?>
+                            <li class="text-success">Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b></li>
+                            <li class="text-success">Half Day <b>(<?= $halfDay ?> / 2) => (<?= $halfDay / 2 ?>)</b></li>
+                            <?= ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != '') ? "<li class='text-danger'> Zero Credit Leave <b>($zeroCreditLeaveDays x 2) =>  ($doubleLeaveDays) </b></li>" : ''; ?>
+                            <li>Total Worked Days <b>(<?= $totalWorkingDays ?> Days)</b></li>
+                        </ul>
+
+
                     </td>
                 </tr>
                 <tr>
@@ -50,7 +58,9 @@
     </div>
     <div class="card-body">
         <div class="fs-3"><b>₹ <?= $calculatedSalary ?></b></div>
+        <?php if ($attendedDays < $minimumDayAttendance): ?>
         <small>( To be eligible for salary, an employee must have attended a minimum of <?= $minimumDayAttendance ?> days in the
             month. )</small>
+        <?php endif; ?>
     </div>
 </div>
