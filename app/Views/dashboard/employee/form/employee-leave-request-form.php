@@ -37,6 +37,7 @@
                     <?php if ($leavecredit > 1): ?>
                         <button type="submit" class="btn btn-warning">Submit Request</button>
                     <?php elseif ($leavecredit < 1): ?>
+                        <input type="hidden" name="zeroleavecredit" value="1" required>
                         <button type="button" onclick="openDialogModal('leaveCreditAlert');" class="btn btn-warning">Submit Request</button>
                         <dialog id="leaveCreditAlert" class="col-lg-4 border-0 rounded shadow p-0">
                             <div class="card">

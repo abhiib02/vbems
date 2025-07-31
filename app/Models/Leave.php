@@ -84,6 +84,7 @@ class Leave extends Model {
         return $result;
     }
     
+    
     public function getAllPendingLeaveRequestCount() {
 
         $builder = $this->db->table($this->table);
@@ -237,6 +238,19 @@ class Leave extends Model {
         $builder->where('USER_ID', $user_id);
         $query = $builder->get();
         $result = $query->getResult();
+        return $result;
+    }
+    public function getApprovedZeroLeaveCreditDaysCountofMonthByID($user_id, $month, $year) {
+
+        $builder = $this->db->table($this->table);
+        $builder->select("SUM(DAYS) AS DAYS");
+        $builder->where('MONTH(FROM_DATE)', $month, false);
+        $builder->where('YEAR(FROM_DATE)', $year, false);
+        $builder->where('STATUS', 'Approved');
+        $builder->where('ZEROLEAVECREDIT', 1);
+        $builder->where('USER_ID', $user_id);
+        $query = $builder->get();
+        $result = $query->getRowObject();
         return $result;
     }
     public function getSumofSundayinApprovedLeavesofMonthByID($user_id, $month, $year) {

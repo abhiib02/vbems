@@ -313,6 +313,10 @@ class EmailController extends BaseController {
                             <td>" . $data['TYPE'] . "</td>
                         </tr>
                         <tr>
+                            <td>ZERO LEAVE CREDIT</td>
+                            <td>" . $data['ZEROLEAVECREDIT'] . "</td>
+                        </tr>
+                        <tr>
                             <td>REASON</td>
                             <td>" . $data['REASON'] . "</td>
                         </tr>

@@ -10,6 +10,7 @@
                 onclick="closeDialog()">X</button>
         </div>
         <div class="card-body">
+
             <table class="table">
                 <tr>
                     <td>Salary <b>(₹<?= $monthsalary ?>)</b> / Total Days
@@ -18,8 +19,8 @@
                     <td></td>
                 </tr>
                 <tr>
-                    <td>Full Days <b>(<?= $fullDay ?>)</b><?= ($paid_leaves != 0) ? "+ Paid Leave Days <b>($paid_leaves)</b>" : ''; ?> +
-                        Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b> + Half Day <b>(<?= $halfDay ?> / 2) </b> = Total Days
+                    <td>( Full Days <b>(<?= $fullDay ?>)</b><?= ($paid_leaves != 0) ? "+ Paid Leave Days <b>($paid_leaves)</b>" : ''; ?> +
+                        Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b> + Half Day <b>(<?= $halfDay ?> / 2) </b> )  <?= ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != '') ? "- ( Zero Credit Leave <b>($zeroCreditLeaveDays x 2)</b>)" : ''; ?>=
                         <b>(<?= $totalWorkingDays ?> Days)</b>
                     </td>
                 </tr>

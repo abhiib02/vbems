@@ -186,9 +186,9 @@ class DashboardController extends BaseController {
         $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
         $this->data['nonSundayHolidays'] = $this->HolidayModel->getAllNonSundayHolidaysCountofMonthYear($this->data['month'], $this->data['year']);
         $this->data['approvedLeaves'] = $this->LeaveModel->getApprovedLeavesofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
+        $this->data['zeroleavecredit'] = $this->LeaveModel->getApprovedZeroLeaveCreditDaysCountofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['sundays_in_leaves'] = $this->LeaveModel->getSumofSundayinApprovedLeavesofMonthByID($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['sundayBeforeJoining'] = $this->countSundaysBeforeDate($this->UserModel->getUserCreatedDate($this->data['id']), $this->data['month'], $this->data['year']);
-        $this->data['leaves'] = $this->LeaveModel->getLeavesByUserID($this->data['id']);
         $this->data['leaveCredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']);
         $this->data['paid_leaves'] = $this->LeaveModel->getPaidLeaveDayCountofMonthYearByUserID($this->data['id'], $this->data['month'], $this->data['year']);
         $this->data['sundays'] = $this->getTotalSundaysInMonth($this->data['month'], $this->data['year']);
@@ -218,6 +218,7 @@ class DashboardController extends BaseController {
         $data['sundays_in_leaves'] = $this->LeaveModel->getSumofSundayinApprovedLeavesofMonthByID($data['id'], $data['month'], $data['year']);
         $data['sundays'] = $this->getTotalSundaysInMonth($data['month'], $data['year']);
         $data['leaveCredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($data['id']);
+        $data['zeroleavecredit'] = $this->LeaveModel->getApprovedZeroLeaveCreditDaysCountofMonthByID($data['id'], $data['month'], $data['year']);
         $data['salary'] = $this->SalaryModel->getSalaryByUserID($data['id']);
         $data['monthsalary'] = $this->AttendanceModel->getBaseSalaryofMonthYearbyUserid($data['id'], $data['month'], $data['year']);
         $data['paid_leaves'] = $this->LeaveModel->getPaidLeaveDayCountofMonthYearByUserID($data['id'], $data['month'], $data['year']);
@@ -241,6 +242,8 @@ class DashboardController extends BaseController {
         $this->data['sundays'] = $this->getTotalSundaysInMonth($this->data['month'], $this->data['year']);
         $this->data['salary'] = $this->SalaryModel->getSalaryByUserID($id);
         $this->data['monthsalary'] = $this->AttendanceModel->getBaseSalaryofMonthYearbyUserid($id, $this->data['month'], $this->data['year']);
+        $this->data['leaves'] = $this->LeaveModel->getAllApprovedLeaveRequestofMonthYear($id, $this->data['month'], $this->data['year']);
+        $this->data['zeroleavecredit'] = $this->LeaveModel->getApprovedZeroLeaveCreditDaysCountofMonthByID($id, $this->data['month'], $this->data['year']);
         $this->data['paid_leaves'] = $this->LeaveModel->getPaidLeaveDayCountofMonthYearByUserID($id, $this->data['month'], $this->data['year']);
         $this->data['unpaid_leaves'] = $this->LeaveModel->getLeaveDayCountofMonthYearByUserID($id, $this->data['month'], $this->data['year']);
         $this->data['leaveCredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($id);
