@@ -43,6 +43,7 @@ $routes->group('', ['filter' => 'AuthGuard'], function ($routes) {
     $routes->get('leaveRequestForm', 'DashboardController::EmployeeLeaveRequestForm');
     $routes->get('attendanceInfo', 'DashboardController::EmployeeAttedance');
     $routes->post('requestleaveprocess', 'LeaveController::requestleaveprocess');
+    $routes->post('punch-out', 'AttendanceController::AttendanceEntryPunchOutProcess');
 });
 
 /*------------------- Admin Protected Routes ------------------*/

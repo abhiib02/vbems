@@ -61,7 +61,7 @@ class AttendanceController extends BaseController {
 
             // Check For half day on Punch out
             $exitTime = new \DateTime(); // now
-            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_ENTRY_TIME);
+            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
 
             if ($exitTime < $cutoff) {
                 $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
@@ -95,7 +95,7 @@ class AttendanceController extends BaseController {
         $date     = date('Y-m-d');
         $user_id  = $USER_ID;
         $isEntryExist = $this->AttendanceModel->isEntryExist($date, $user_id);
-
+        
         if (!$isEntryExist) {
             $AttandenceData = $this->prepareAttendanceData($user_id, $date);
 
@@ -104,6 +104,40 @@ class AttendanceController extends BaseController {
             $this->checkandCreateSandwichLeave($user_id, $date);
 
             return $this->RedirectWithtoast('Attendance Marked', 'Success', '');
+        }
+        return 0;
+    }
+    public function AttendanceEntryPunchOutProcess() {
+
+
+        $date     = date('Y-m-d');
+        $user_id  = $this->request->getPost('user_id');
+        $isEntryExist = $this->AttendanceModel->isEntryExist($date, $user_id);
+        $isEntryPunchedOut = $this->AttendanceModel->isEntryPunchedOut($date, $user_id);
+        
+        if($isEntryPunchedOut){
+            return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+        }
+        
+        if ($isEntryExist && !($isEntryPunchedOut)) {    
+
+            // Check For half day on Punch out
+            $exitTime = new \DateTime(); // now
+            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
+
+            if ($exitTime < $cutoff) {
+                $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
+            }
+
+            $hoursTimeforPunchout = 1;
+            $hoursPassedAfterEntry = $this->hoursPassedAfterEntry($user_id, $date);
+
+            if ($hoursPassedAfterEntry > $hoursTimeforPunchout) {
+                $this->AttendanceModel->setAttendancePunchOutByUserID($user_id, $date);
+                return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.login');
+            } else {
+                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+            }
         }
         return 0;
     }
