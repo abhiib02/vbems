@@ -84,6 +84,12 @@ $routes->group('', ['filter' => 'AdminAuthGuard'], function ($routes) {
     $routes->post('add-department', 'DepartmentController::AddDepartmentProcess');
     $routes->post('update-department', 'DepartmentController::updateDepartmentProcess');
     $routes->get('delete-department/(:num)', 'DepartmentController::deleteDepartmentProcess/$1');
+
+    // Options
+    $routes->get('options-list', 'DashboardController::optionsList', ['as' => 'options.list']);
+    $routes->post('add-option', 'OptionsController::addOptionProcess');
+    $routes->post('option/(:alpha)', 'OptionsController::save/$1');
+    
 });
 
 /*------------------- Public Attendance ------------------*/

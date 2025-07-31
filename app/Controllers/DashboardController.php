@@ -8,11 +8,12 @@ use App\Models\Salary;
 use App\Models\Holiday;
 use App\Models\Attendance;
 use App\Models\Department;
+use App\Models\Option;
 use App\Models\LeaveCredit;
 use Config\Services;
 
 class DashboardController extends BaseController {
-    public $data, $UserModel, $LeaveModel, $SalaryModel, $HolidayModel, $DepartmentModel, $AttendanceModel, $LeaveCreditModel;
+    public $data, $UserModel, $LeaveModel, $SalaryModel, $HolidayModel, $DepartmentModel, $OptionModel, $AttendanceModel, $LeaveCreditModel;
     public function __construct() {
         $this->UserModel = new User();
         $this->LeaveModel = new Leave();
@@ -20,6 +21,7 @@ class DashboardController extends BaseController {
         $this->HolidayModel = new Holiday();
         $this->AttendanceModel = new Attendance();
         $this->DepartmentModel = new Department();
+        $this->OptionModel = new Option();
         $this->LeaveCreditModel = new LeaveCredit();
         $this->session = Services::session();
         $this->data['id'] = $this->session->get('id');
@@ -27,6 +29,7 @@ class DashboardController extends BaseController {
         $this->data['email'] = $this->session->get('email');
         $this->data['noindex'] = 1;
         $this->data['leaveRequestsCount'] = $this->LeaveModel->getAllPendingLeaveRequestCount();
+        $this->data['ShowPunchOutButton'] = $this->OptionModel->getOptionValue('ShowPunchOutButton');
     }
     //------------------ Render Functions ---------------------//
     protected function renderAdminPage($view, $data = []) {
@@ -140,9 +143,15 @@ class DashboardController extends BaseController {
         $this->data['departments'] = $this->DepartmentModel->getAllDepartments();
         return $this->renderAdminPage('dashboard/admin/lists/admin-departmentList', $this->data);
     }
+    public function optionsList() {
+        $this->data['title'] = 'Options List';
+        $this->data['options'] = $this->OptionModel->getAllOptions();
+        return $this->renderAdminPage('dashboard/admin/lists/admin-optionList', $this->data);
+    }
     //------------------ Employee View Functions ---------------------//
     public function EmployeeDashboard() {
         $this->data = $this->getAllDataforEmployeeDashboard();
+        $this->data['ShowPunchOutButton'] = $this->OptionModel->getOptionValue('ShowPunchOutButton');
         $this->data['title'] = $this->data['name'] . ' Dashboard';
         return $this->renderEmployeePage('dashboard/employee/employee-dashboard', $this->data);
     }

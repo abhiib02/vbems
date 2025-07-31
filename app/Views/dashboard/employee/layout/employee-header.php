@@ -63,15 +63,24 @@
                         </div>
                     </div>
                     <div class="row px-3">
-                        <form action="/punch-out" method="post" id="punchoutform">
-                            <input type="hidden" name="user_id" value="<?= $id ?>">
-                        </form>
-                        <button type="submit" class="btn btn-outline-light fs-3 p-0 mb-1 hide-on-mobile" form="punchoutform" onclick="confirmBeforeAction('','Do You Really Want to Punchout ?');" data-bs-toggle="tooltip" data-bs-placement="right"
-                            data-bs-title="Punch Out"><i class="ri-logout-box-r-line"></i></button>
-                        <button onclick="changeTheme()" id="themeChangerBtn" class="btn btn-outline-light fs-3 p-0 mb-1 hide-on-mobile"> <i class="ri-sun-fill"></i></button>
+
+                        <?php if($ShowPunchOutButton):?>
+                            <form action="/punch-out" method="post" id="punchoutform">
+                                <input type="hidden" name="user_id" value="<?= $id ?>">
+                            </form>
+                            <button type="submit" class="btn btn-outline-light fs-3 p-0 mb-1 hide-on-mobile"
+                                form="punchoutform" onclick="confirmBeforeAction('','Do You Really Want to Punchout ?');"
+                                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Punch Out"><i
+                                    class="ri-logout-box-r-line"></i></button>
+                        <?php endif;?>
+                        
+                        <button onclick="changeTheme()" id="themeChangerBtn"
+                            class="btn btn-outline-light fs-3 p-0 mb-1 hide-on-mobile"> <i
+                                class="ri-sun-fill"></i></button>
                         <button onclick="confirmBeforeAction('/logout','Do You Want to Logout ?');" type="button"
-                            class="btn btn-danger fs-3 p-0 mb-1 hide-on-mobile" data-bs-toggle="tooltip" data-bs-placement="right"
-                            data-bs-title="Logout"> <i class="ri-logout-circle-r-line"></i></button>
+                            class="btn btn-danger fs-3 p-0 mb-1 hide-on-mobile" data-bs-toggle="tooltip"
+                            data-bs-placement="right" data-bs-title="Logout"> <i
+                                class="ri-logout-circle-r-line"></i></button>
                     </div>
                 </div>
             </aside>
@@ -80,12 +89,15 @@
             <section class=" bg-secondary-subtle p-0">
                 <nav class="navbar bg-dark " data-bs-theme="dark">
                     <div class="container-fluid">
-                        <button onclick="history.back()" class="btn btn-outline-light"><i class="ri-arrow-left-line"></i> Back</button>
+                        <button onclick="history.back()" class="btn btn-outline-light"><i
+                                class="ri-arrow-left-line"></i> Back</button>
                         <span class="navbar-brand mb-0 h1"><?= $title ?></span>
                         <div>
-                            <button onclick="changeTheme()" id="themeChangerBtn-2" class="btn btn-outline-light mb-1 hide-on-desktop"> <i class="ri-sun-fill"></i></button>
+                            <button onclick="changeTheme()" id="themeChangerBtn-2"
+                                class="btn btn-outline-light mb-1 hide-on-desktop"> <i class="ri-sun-fill"></i></button>
                             <button onclick="confirmBeforeAction('/logout','Do You Want to Logout ?');" type="button"
-                                class="btn btn-danger mb-1 hide-on-desktop"> <i class="ri-logout-circle-r-line"></i> Logout</button>
+                                class="btn btn-danger mb-1 hide-on-desktop"> <i class="ri-logout-circle-r-line"></i>
+                                Logout</button>
                         </div>
 
                     </div>

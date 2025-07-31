@@ -61,6 +61,8 @@
                             <a href="/attendance" class="btn  dashboard-link btn-outline-light fs-3 p-0 mb-1"
                                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Attendance"><i
                                     class="ri-calendar-view"></i></a>
+                            <a href="/options-list" class="btn  dashboard-link btn-outline-light fs-3 p-0 mb-1"
+                                data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Options & Flags"><i class="ri-flag-2-line"></i></a>
 
                         </div>
                     </div>
