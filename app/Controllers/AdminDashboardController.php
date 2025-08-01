@@ -43,38 +43,41 @@ class AdminDashboardController extends BaseController {
     }
     //------------------ Admin View Functions ---------------------//
 
-
     public function AdminDashboard() {
 
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
         $this->data['title'] = 'Admin Dashboard';
-        
-        $this->data['todayattendance'] = $this->AttendanceModel->getTodayattendance();
-        $this->data['TotalEmployees'] = $this->UserModel->getAllEmployeesCount();
-        $this->data['yearlyAttendance'] = json_encode($this->AttendanceModel->getSumofTotalUserCountofmonthyear($this->data['year']));
-        $this->data['nextHoliday'] = $this->HolidayModel->getNextHoliday();
-        $this->data['TotalDepartments'] = $this->DepartmentModel->getAllDepartmentsCount();
 
-
-        $this->data['HolidaysArr'] = [];
         $AllHolidaysCount = $this->HolidayModel->getAllHolidaysofYear($this->data['year']);
-        
+        $HolidaysArr = [];
         for ($i = 1; $i <= 12; $i++) {
             $HolidaysCount = $AllHolidaysCount[$i - 1]->HOLIDAY_COUNT;
             $sundaysCount = $this->getTotalSundaysInMonth($i, $this->data['year']);
-            array_push($this->data['HolidaysArr'], ($HolidaysCount + $sundaysCount));
+            array_push($HolidaysArr, ($HolidaysCount + $sundaysCount));
         }
         
+        $data =[
+            'todayattendance'=> $this->AttendanceModel->getTodayattendance(),
+            'TotalEmployees' => $this->UserModel->getAllEmployeesCount(),
+            'yearlyAttendance' => json_encode($this->AttendanceModel->getSumofTotalUserCountofmonthyear($this->data['year'])),
+            'nextHoliday' => $this->HolidayModel->getNextHoliday(),
+            'TotalDepartments' => $this->DepartmentModel->getAllDepartmentsCount(),
+            'HolidaysArr'=> json_encode($HolidaysArr)
+        ];
 
-        $this->data['HolidaysArr'] = json_encode($this->data['HolidaysArr']);
-
+        $this->data = array_merge($this->data, $data);
         return $this->renderAdminPage('dashboard/admin/admin-dashboard', $this->data);
     }
     public function employeeList() {
 
         $this->data['title'] = 'Employees List';
-        $this->data['employees'] = $this->UserModel->getAllEmployeesWithSalaryandDepartment();
-        $this->data['departments'] = $this->DepartmentModel->getAllDepartments();
+
+        $data = [
+            'employees' => $this->UserModel->getAllEmployeesWithSalaryandDepartment(),
+            'departments' => $this->DepartmentModel->getAllDepartments(),
+        ];
+
+        $this->data = array_merge($this->data, $data);
 
         return $this->renderAdminPage('dashboard/admin/lists/admin-employeeList', $this->data);
     }
@@ -104,12 +107,16 @@ class AdminDashboardController extends BaseController {
     public function attendance() {
         
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
-    
-        $this->data['title'] = $this->getMonthName($this->data['month']).' '.$this->data['year'].' Attendance';
-        $this->data['all_employees_count'] = $this->UserModel->getAllEmployeesCount();
-        $this->data['Holidays'] = $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']);
-        $this->data['AttendanceStrength'] = $this->AttendanceModel->getEachDayattendanceDataofMonth($this->data['month'], $this->data['year']);
-        $this->data['today_strength'] = $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d'));
+
+        $data = [
+            'title' => $this->getMonthName($this->data['month']) . ' ' . $this->data['year'] . ' Attendance',
+            'all_employees_count' => $this->UserModel->getAllEmployeesCount(),
+            'Holidays' =>  $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']),
+            'AttendanceStrength' => $this->AttendanceModel->getEachDayattendanceDataofMonth($this->data['month'], $this->data['year']),
+            'today_strength' => $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d')),
+        ];
+        
+        $this->data = array_merge($this->data, $data);
 
         return $this->renderAdminPage('dashboard/admin/attendance/admin-attendance', $this->data);
     }
