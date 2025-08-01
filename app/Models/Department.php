@@ -15,74 +15,42 @@ class Department extends Model {
     ];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
-    protected $db;
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
+    
     public function insertDepartment($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
     public function updateDepartment($id, $data) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where(["ID" => $id]);
-        $builder->set($data);
-        $builder->update();
-        return 1;
+        return $this->update($id, $data);
     }
-
     public function deleteDepartment($id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('ID', $id);
-        $builder->delete();
-        return $id;
+        return $this->delete($id);
     }
     public function isDepartmentExistID($id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('ID');
-        $builder->where('ID', $id);
-        $query = $builder->countAllResults();
-
-        return ($query > 0) ? 1 : 0;
+        return $this->where('ID', $id)->countAllResults() > 0;
     }
     public function getAllDepartments() {
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()->findAll();
     }
     public function getAllDepartmentsCount() {
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $count = $builder->countAllResults();
-        return $count;
+        return $this->db->table($this->table)->countAllResults();
     }
     public function getDepartmentByID($ID) {
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return ($result != null) ? $result : null;
+        return $this->find($ID);
     }
     public function getDepartmentNameByDepartmentID($ID) {
-        $builder = $this->db->table($this->table);
-        $builder->select("NAME");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return ($result != null) ? $result->NAME : null;
+        $result = $this->asObject()
+            ->select('NAME')
+            ->where('ID', $ID)
+            ->first();
+
+        return $result?->NAME ?? null;
     }
-    
     public function getLeavePersonsCountByDepartmentID($ID) {
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return ($result != null) ? $result->LEAVE_PERSON_COUNT : null;
+        $result = $this->asObject()
+            ->select('NAME')
+            ->where('ID', $ID)
+            ->first();
+
+        return $result?->LEAVE_PERSON_COUNT ?? null;
     }
 }
