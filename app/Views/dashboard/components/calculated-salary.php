@@ -28,7 +28,7 @@
                             <?= ($paid_leaves != 0) ? "<li class='text-success'> Paid Leave Days <b>($paid_leaves)</b></li>" : ''; ?>
                             <li class="text-success">Non Leave Sunday <b>(<?= $coutable_sunday ?>) </b></li>
                             <li class="text-success">Half Day <b>(<?= $halfDay ?> / 2) => (<?= $halfDay / 2 ?>)</b></li>
-                            <?= ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != '') ? "<li class='text-danger'> Zero Credit Leave <b>($zeroCreditLeaveDays x 2) =>  ($doubleLeaveDays) </b></li>" : ''; ?>
+                            <?= ($zeroCreditLeaveDays != 0) ? "<li class='text-danger'> Zero Credit Leave <b>($zeroCreditLeaveDays x 2) =>  ($doubleLeaveDays) </b></li>" : ''; ?>
                             <li>Total Worked Days <b>(<?= $totalWorkingDays ?> Days)</b></li>
                             <?php if ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != ''): ?>
                                 <li>Total Worked Days Without Zero Credit Leave Deduction <b>(<?= $totalWorkingDaysWithoutZeroCreditLeave ?> Days)</b></li>
@@ -45,7 +45,7 @@
                             <b>(<?= $DayPay ?> Pay/day)</b><?php endif; ?>
                     </td>
                 </tr>
-                <?php if ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != ''): ?>
+                <?php if ($zeroCreditLeaveDays != 0): ?>
                     <tr>
                         <td>Calculated Salary Without Zero Credit Leave Deduction = <b>₹<?= $calculatedSalaryWithoutZeroCreditLeave ?>
                                 <?= ($attendedDays < $minimumDayAttendance) ? '(15 Days Attendance Required)' : '' ?></b>
@@ -73,7 +73,7 @@
     </div>
     <div class="card-body">
         <div class="fs-3"><b>₹ <?= $calculatedSalary ?></b></div>
-        <?php if ($zeroCreditLeaveDays != 0 || $zeroCreditLeaveDays != ''): ?>
+        <?php if ($zeroCreditLeaveDays != 0): ?>
             <small>Without Zero Credit Leave Deduction (<b>₹ <?= $calculatedSalaryWithoutZeroCreditLeave ?></b>)</small><br>
         <?php endif; ?>
         <?php if ($attendedDays < $minimumDayAttendance): ?>

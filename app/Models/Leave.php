@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class Leave extends Model {
     protected $table = 'leaves_table';
+    protected $primaryKey = 'ID';
     protected $allowedFields = [
         'USER_ID',
         'FROM_DATE',
@@ -23,288 +24,255 @@ class Leave extends Model {
     protected $db;
     protected $dateFormat = 'datetime';
 
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
+   
     public function insertLeave($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
     public function getAllLeaves() {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()->findAll();
     }
     public function getAllPendingLeaveRequest() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID');
-        $builder->where('STATUS', 'Pending');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->select("{$this->table}.*, users_table.NAME")
+                    ->join("users_table", "users_table.ID = {$this->table}.USER_ID")
+                    ->where('STATUS', 'Pending')
+                    ->get()
+                    ->getResult();
     }
     public function getAllPendingLeaveRequestofMonthYear($month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID');
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('STATUS', 'Pending');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+
+        return $this->select("{$this->table}.*, users_table.NAME")
+            ->join("users_table", "users_table.ID = {$this->table}.USER_ID")
+            ->where('MONTH(FROM_DATE)', $month, false)
+            ->where('YEAR(FROM_DATE)', $year, false)
+            ->where('STATUS', 'Pending')
+            ->get()
+            ->getResult();
+
     }
     public function getAllApprovedLeaveRequestofMonthYear($month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID');
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('STATUS', 'Approved');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+
+        return $this->select("{$this->table}.*, users_table.NAME")
+            ->join("users_table", "users_table.ID = {$this->table}.USER_ID")
+            ->where('MONTH(FROM_DATE)', $month, false)
+            ->where('YEAR(FROM_DATE)', $year, false)
+            ->where('STATUS', 'Approved')
+            ->get()
+            ->getResult();
+
     }
     public function getAllRejectedLeaveRequestofMonthYear($month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID');
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('STATUS', 'Rejected');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->select("{$this->table}.*, users_table.NAME")
+            ->join("users_table", "users_table.ID = {$this->table}.USER_ID")
+            ->where('MONTH(FROM_DATE)', $month, false)
+            ->where('YEAR(FROM_DATE)', $year, false)
+            ->where('STATUS', 'Rejected')
+            ->get()
+            ->getResult();
+
     }
     
     
     public function getAllPendingLeaveRequestCount() {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('STATUS', 'Pending');
-        $count = $builder->countAllResults();
-        return $count;
+        return $this->where('STATUS', 'Pending')->countAllResults();
     }
-    public function getLeavesByUserID($USER_ID) {
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME, leavecredit_table.LEAVECREDIT');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID', 'left');
-        $builder->join('leavecredit_table', 'leavecredit_table.USER_ID = leaves_table.USER_ID', 'left');
-        $builder->where('leaves_table.USER_ID', $USER_ID);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+    public function getLeavesByUserID($user_id) {
+
+        return $this->select("{$this->table}.*, users_table.NAME, leavecredit_table.LEAVECREDIT")
+                    ->join('users_table', "users_table.ID = {$this->table}.USER_ID", 'left')
+                    ->join('leavecredit_table', "leavecredit_table.USER_ID = {$this->table}.USER_ID", 'left')
+                    ->where("{$this->table}.USER_ID", $user_id)
+                    ->orderBy('ID', 'desc')
+                    ->get()
+                    ->getResult();
     }
     public function getLeavesAfterTodayByDepartmentID($DEPARTMENT_ID) {
         $TODAY = date('Y-m-d');
-        $builder = $this->db->table($this->table);
-        $builder->select('leaves_table.*, users_table.NAME, leavecredit_table.LEAVECREDIT');
-        $builder->join('users_table', 'users_table.ID = leaves_table.USER_ID', 'left');
-        $builder->join('leavecredit_table', 'leavecredit_table.USER_ID = leaves_table.USER_ID', 'left');
-        $builder->where('leaves_table.DEPARTMENT_ID', $DEPARTMENT_ID);
-        $builder->where('DATE(leaves_table.TO_DATE) >=', $TODAY);
-        $builder->where('STATUS', 'Approved');
-        $builder->orderBy('leaves_table.ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->select("{$this->table}.*, users_table.NAME, leavecredit_table.LEAVECREDIT")
+            ->join('users_table', "users_table.ID = {$this->table}.USER_ID", 'left')
+            ->join('leavecredit_table', "leavecredit_table.USER_ID = {$this->table}.USER_ID", 'left')
+            ->where("{$this->table}.DEPARTMENT_ID", $DEPARTMENT_ID)
+            ->where("{$this->table}.TO_DATE >=", $TODAY)
+            ->where('STATUS', 'Approved')
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
     public function getLeavesCountAfterTodayByDepartmentID($DEPARTMENT_ID) {
-        $TODAY = date('Y-m-d');
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('DEPARTMENT_ID', $DEPARTMENT_ID);
-        $builder->where('DATE(FROM_DATE) >', $TODAY);
-        $builder->where('STATUS !=', 'Rejected');
-        $count = $builder->countAllResults();
-        return $count;
+        $today = date('Y-m-d');
+
+        return $this->where('DEPARTMENT_ID', $DEPARTMENT_ID)
+            ->where('FROM_DATE >', $today) 
+            ->where('STATUS !=', 'Rejected')
+            ->countAllResults();
     }
     public function getLatestLeaveByUserID($USER_ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('USER_ID', $USER_ID);
-        $builder->orderBy('ID', 'DESC');
-        $builder->limit(1);
-        $query = $builder->get();
-        return $query->getRow();
+        return $this->asObject()
+            ->where('USER_ID', $USER_ID)
+            ->orderBy('ID', 'DESC')
+            ->first();
     }
     public function getLeaveByID($ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result;
+        return $this->asObject()->find($ID);
     }
-    public function getuserByrequestID($ID) {
+    public function getuserByrequestID($requestId) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("USER_ID");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->USER_ID;
+        $row = $this->select('USER_ID')->asObject()->find($requestId);
+        return $row ? (int) $row->USER_ID : null;
     }
     public function getLeaveDayCountofMonthYear($month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->selectSum("DAYS");
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->DAYS;
+        $startDate = date('Y-m-d', strtotime("$year-$month-01"));
+        $endDate = date('Y-m-t', strtotime($startDate)); // last day of the month
+
+        $result = $this->selectSum('DAYS')
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->asObject()
+            ->first();
+
+        return $result && $result->DAYS !== null ? $result->DAYS : 0;
     }
     public function isLeaveExist($user_id, $from, $to) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('FROM_DATE', $from);
-        $builder->where('TO_DATE', $to);
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('FROM_DATE', $from)
+            ->where('TO_DATE', $to)
+            ->where('USER_ID', $user_id)
+            ->countAllResults() > 0;
     }
     public function isLeaveExistByRequestID($requestID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('ID', $requestID);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('ID', $requestID)
+            ->countAllResults() > 0;
     }
     public function isDateExistBetweenFromAndTo($department_id, $date) {
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where("'$date' BETWEEN FROM_DATE AND TO_DATE", null, false);
-        $builder->where('DEPARTMENT_ID', $department_id);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where("FROM_DATE <=", $date)
+            ->where("TO_DATE >=", $date)
+            ->where("DEPARTMENT_ID", $department_id)
+            ->countAllResults() > 0;
     }
     public function isDepartmentLeaveExistonDate($department_id, $from, $to) {
-        $builder = $this->db->table($this->table);
-        $builder->where('FROM_DATE', $from);
-        $builder->where('TO_DATE', $to);
-        $builder->where('DEPARTMENT_ID', $department_id);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('FROM_DATE', $from)
+            ->where('TO_DATE', $to)
+            ->where('DEPARTMENT_ID', $department_id)
+            ->countAllResults() > 0;
     }
-    public function isSandwichLeave($user_id, $date) {
+    public function isSandwichLeave($user_id, $fromdate) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('FROM_DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('TYPE', 'Sandwich');
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('FROM_DATE', $fromdate)
+            ->where('USER_ID', $user_id)
+            ->where('TYPE', 'Sandwich')
+            ->countAllResults() > 0;
     }
     public function isOnNotifiedLeaveOnFromDate($user_id, $day, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('DAY(FROM_DATE)', $day, false);
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('STATUS', 'Approved');
-        $query = $builder->get();
+        $fromDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
 
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('FROM_DATE', $fromDate)
+            ->where('USER_ID', $user_id)
+            ->where('STATUS', 'Approved')
+            ->countAllResults() > 0;
+
     }
     public function isOnNotifiedLeaveOnToDate($user_id, $day, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('DAY(TO_DATE)', $day, false);
-        $builder->where('MONTH(TO_DATE)', $month, false);
-        $builder->where('YEAR(TO_DATE)', $year, false);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('STATUS', 'Approved');
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        $toDate = sprintf('%04d-%02d-%02d', $year, $month, $day);
+
+        return $this->where('TO_DATE', $toDate)
+            ->where('USER_ID', $user_id)
+            ->where('STATUS', 'Approved')
+            ->countAllResults() > 0;
     }
     public function getApprovedLeavesofMonthByID($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('STATUS', 'Approved');
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate)); // gets the last day of the month
+
+        return $this->asObject()
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->where('STATUS', 'Approved')
+            ->where('USER_ID', $user_id)
+            ->findAll();
     }
     public function getApprovedZeroLeaveCreditDaysCountofMonthByID($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("SUM(DAYS) AS DAYS");
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('STATUS', 'Approved');
-        $builder->where('ZEROLEAVECREDIT', 1);
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->get();
-        $result = $query->getRowObject();
-        return $result;
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate));
+
+        $result = $this->selectSum('DAYS')
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->where('STATUS', 'Approved')
+            ->where('ZEROLEAVECREDIT', 1)
+            ->where('USER_ID', $user_id)
+            ->first();
+        return isset($result['DAYS']) ? (int)$result['DAYS'] : 0;
     }
     public function getSumofSundayinApprovedLeavesofMonthByID($user_id, $month, $year) {
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate));
 
-        $builder = $this->db->table($this->table);
-        $builder->select("SUM(SUNDAY_COUNT) as SUNDAYS");
-        $builder->where('MONTH(FROM_DATE)', $month, false);
-        $builder->where('YEAR(FROM_DATE)', $year, false);
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->SUNDAYS;
+        $result = $this->selectSum('SUNDAY_COUNT')
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->where('STATUS', 'Approved')
+            ->where('USER_ID', $user_id)
+            ->first();
+
+        return isset($result['SUNDAY_COUNT']) ? (int) $result['SUNDAY_COUNT'] : 0;
     }
     public function getLeaveDayCountofMonthYearByUserID($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->selectSum("DAYS");
-        $builder->where('MONTH(FROM_DATE)', $month);
-        $builder->where('YEAR(FROM_DATE)', $year);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('TYPE NOT LIKE', '%PL');
-        $builder->where('STATUS', 'Approved');
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->DAYS;
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate));
+
+        $result = $this->selectSum('DAYS')
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->where('USER_ID', $user_id)
+            ->where('STATUS', 'Approved')
+            ->where('TYPE NOT LIKE', '%PL')
+            ->first();
+
+        return isset($result['DAYS']) ? (int)$result['DAYS'] : 0;
     }
     public function getPaidLeaveDayCountofMonthYearByUserID($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->selectSum("DAYS");
-        $builder->where('MONTH(FROM_DATE)', $month);
-        $builder->where('YEAR(FROM_DATE)', $year);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('TYPE LIKE', '%PL');
-        $builder->where('STATUS', 'Approved');
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->DAYS;
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate));
+
+        $result = $this->selectSum('DAYS')
+            ->where('FROM_DATE >=', $startDate)
+            ->where('FROM_DATE <=', $endDate)
+            ->where('USER_ID', $user_id)
+            ->where('TYPE LIKE', '%PL')
+            ->where('STATUS', 'Approved')
+            ->first();
+
+        return isset($result['DAYS']) ? (int)$result['DAYS'] : 0;
     }
     public function approveLeaveByID($ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where(["ID" => $ID]);
-        $builder->set('STATUS', 'Approved');
-        $builder->update();
-        $builder->get();
-        return $ID;
+        if (!$this->isLeaveExistByRequestID($ID)) {
+            return false;
+        }
+        return $this->db->table($this->table)
+            ->where('ID', $ID)
+            ->update(['STATUS' => 'Approved']);
     }
     public function rejectLeaveByID($ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where(["ID" => $ID]);
-        $builder->set('STATUS', 'Rejected');
-        $builder->update();
-        return $ID;
+        if (!$this->isLeaveExistByRequestID($ID)) {
+            return false;
+        }
+        return $this->db->table($this->table)
+            ->where('ID', $ID)
+            ->update(['STATUS' => 'Rejected']);
     }
 }
