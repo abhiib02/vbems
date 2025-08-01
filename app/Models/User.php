@@ -8,242 +8,126 @@ use App\Models\Salary;
 class User extends Model {
     protected $table = 'users_table';
     protected $primaryKey = 'ID';
-    protected $allowedFields = ['NAME', 'EMAIL', 'PASSWORD', 'ROLE', 'DESIGNATION', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
+    protected $allowedFields = ['NAME', 'BIOMETRIC_ID', 'EMAIL', 'ROLE', 'DESIGNATION', 'DEPARTMENT_ID', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
-    protected $db;
     protected $salaryModel;
 
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
-
     public function insertUser($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
-    public function updateUser($id, $data) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where(["ID" => $id]);
-        $builder->set($data);
-        $builder->update();
-        return 1;
+    public function updateUser($id, $data): bool {
+        return $this->update($id, $data);
     }
     public function getAllUsers() {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()->findAll();
     }
-    public function getUserID($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("ID");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->ID;
+    public function getUserID(string $email): ?int {
+        $user = $this->asObject()->select('ID')->where('EMAIL', $email)->first();
+        return $user->ID ?? null;
     }
     public function getUser($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result;
+        return $this->asObject()->where('EMAIL', $email)->first();
     }
-    public function getUserByID($id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('ID', $id);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result;
+    public function getUserByID(int $id){
+        return $this->asObject()->find($id);
     }
     public function getUserName($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("NAME");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->NAME;
+        $user = $this->findOneByEmail($email);
+        return $user->NAME ?? null;
     }
     public function getUserNameByID($ID) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("NAME");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->NAME;
+        return $this->asArray()->find($ID)['NAME'] ?? null;
     }
     public function getUserCreatedDate($ID) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("CREATED_ON");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        $CREATED_DATE = explode(' ', $result->CREATED_ON);
-        return $CREATED_DATE[0];
+        $user = $this->select('CREATED_ON')->asArray()->find($ID);
+        if (!$user || empty($user['CREATED_ON'])) {
+            return null;
+        }
+        return (new \DateTime($user['CREATED_ON']))->format('Y-m-d');
     }
     public function getUserEmailByID($ID) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("EMAIL");
-        $builder->where('ID', $ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->EMAIL;
+        $user = $this->select('EMAIL')->asArray()->find($ID);
+        return $user['EMAIL'] ?? null;
     }
-    public function getUserIDByBiometricID($biometricID) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("ID");
-        $builder->where('BIOMETRIC_ID', $biometricID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->ID;
+    public function getUserIDByBiometricID(string $biometricID){
+        $user = $this->select('ID')
+            ->asArray()
+            ->where('BIOMETRIC_ID', $biometricID)
+            ->first();
+        return $user['ID'] ?? null;
     }
     public function getDepartmentIDByUserID($user_id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("DEPARTMENT_ID");
-        $builder->where('ID', $user_id);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->DEPARTMENT_ID;
+        $user = $this->select('DEPARTMENT_ID')->asObject()->find($user_id);
+        return $user->DEPARTMENT_ID ?? null;
     }
     public function getUserIDByEmail($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("ID");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->ID;
+        $user = $this->select('ID')->asObject()->where('EMAIL', $email)->first();
+        return $user->ID ?? null;
     }
     public function isUserExist($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('EMAIL', $email)->countAllResults() > 0;
     }
     public function isUserDeactivated($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('EMAIL', $email);
-        $builder->where('DEACTIVATE', 1);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('EMAIL', $email)->where('DEACTIVATE',1)->countAllResults() > 0;
     }
     public function isUserExistByID($id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('ID', $id);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('ID', $id)->countAllResults() > 0;
     }
     public function isBiometricIDExist($bid) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('BIOMETRIC_ID', $bid);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('BIOMETRIC_ID', $bid)->countAllResults() > 0;
     }
     public function delUser($id) {
-
-        if (!($this->isUserExistByID($id))) {
-            return 0;
-        }
-
-        $builder = $this->db->table($this->table);
-        $builder->where('ID', $id);
-        $builder->delete();
-        return 1;
+        $this->delete($id);
+        return $this->db->affectedRows() > 0;
     }
     public function isHashExist($hash) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('PASSWORD', $hash);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('PASSWORD', $hash)->first() !== null;
     }
     public function insertPasswordResetTokenToEmail($email, $token) {
 
-        $builder = $this->db->table($this->table);
-        $builder->set("PASSWORD_RESET_TOKEN", $token);
-        $builder->where('EMAIL', $email);
-        $builder->update();
+        return $this->where('EMAIL', $email)
+            ->set('PASSWORD_RESET_TOKEN', $token)
+            ->update();
     }
     public function isTokenExist($token) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('PASSWORD_RESET_TOKEN', $token);
-        $query = $builder->get();
-        return ($query->getNumRows() > 0) ? 1 : 0;
+        return $this->where('PASSWORD_RESET_TOKEN', $token)->countAllResults() > 0;
     }
     public function isAdmin($email) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select("ROLE");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->ROLE;
+        $user = $this->select('ROLE')->asObject()->where('EMAIL', $email)->first();
+        return isset($user->ROLE) && (int)$user->ROLE === 1;
     }
     public function MakeAdmin($id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->set("ROLE", 1);
-        $builder->where('ID', $id);
-        $builder->update();
+        return $this->update($id, ['ROLE' => 1]);
     }
 
     public function RemoveAdmin($id) {
 
-        $builder = $this->db->table($this->table);
-        $builder->set("ROLE", 0);
-        $builder->where('ID', $id);
-        $builder->update();
-        return 'Admin Privileges Revoked';
+        return $this->update($id, ['ROLE' => 0]);
     }
     public function getUserPassHash($email) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("PASSWORD");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->PASSWORD;
+        $user = $this->select('PASSWORD')
+            ->asObject()
+            ->where('EMAIL', $email)
+            ->first();
+
+        return $user->PASSWORD ?? null;
     }
     public function getUserPassResetToken($email) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("PASSWORD_RESET_TOKEN");
-        $builder->where('EMAIL', $email);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->PASSWORD_RESET_TOKEN;
+        $user = $this->select('PASSWORD_RESET_TOKEN')
+            ->asObject()
+            ->where('EMAIL', $email)
+            ->first();
+
+        return $user->PASSWORD_RESET_TOKEN ?? null;
     }
     public function removePassResetToken($token) {
 
-        $builder = $this->db->table($this->table);
-        $builder->set("PASSWORD_RESET_TOKEN", null);
-        $builder->where("PASSWORD_RESET_TOKEN", $token);
-        $builder->update();
+        return $this->where('PASSWORD_RESET_TOKEN', $token)
+            ->set('PASSWORD_RESET_TOKEN', null)
+            ->update();
     }
     public function can_login($username, $password) {
         $passHash = $this->getUserPassHash($username);
@@ -251,92 +135,57 @@ class User extends Model {
     }
     public function changePasswordByAdmin($id, $password) {
 
-        $hashedpass = password_hash((string) $password, PASSWORD_DEFAULT);
-        $builder = $this->db->table($this->table);
-        $builder->set("PASSWORD", $hashedpass);
-        $builder->where("ID", $id);
-        $builder->update();
-        return true;
+        $hashedPass = password_hash($password, PASSWORD_DEFAULT);
+        return $this->update($id, ['PASSWORD' => $hashedPass]);
     }
     public function resetpassword($token, $newhash) {
 
-        $builder = $this->db->table($this->table);
-        $builder->set("PASSWORD", $newhash);
-        $builder->where("PASSWORD_RESET_TOKEN", $token);
-        $builder->update();
-        $this->removePassResetToken($token);
-        return true;
+        $updated = $this->where('PASSWORD_RESET_TOKEN', $token)
+            ->set('PASSWORD', $newhash)
+            ->update();
+
+        if ($updated && $this->db->affectedRows() > 0) {
+            $this->removePassResetToken($token);
+            return true;
+        }
+        return false;
     }
 
     public function isAdminExist() {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('ROLE', 1);
-        $query = $builder->countAllResults();
-        return ($query > 0) ? 1 : 0;
+        return $this->where('ROLE', 1)->countAllResults() > 0;
     }
     public function getAllEmployees() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('ROLE', 0);
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()
+            ->where('ROLE', 0)
+            ->findAll();
     }
     public function getAllEmployeesID() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('ID');
-        $builder->where('ROLE', 0);
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return array_column($this->select('ID')->asArray()->where('ROLE', 0)->findAll(), 'ID');
     }
     public function getAllEmployeesCount() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('ROLE', 0);
-        $count = $builder->countAllResults();
-        return $count;
+        return $this->where('ROLE', 0)->countAllResults();
     }
     public function getAllEmployeesWithSalaryandDepartment() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('users_table.*, salary_table.BASIC_SALARY, department_table.NAME as DEPARTMENT_NAME');
-        $builder->join('salary_table', 'users_table.ID = salary_table.USER_ID', 'left');
-        $builder->join('department_table', 'users_table.DEPARTMENT_ID = department_table.ID', 'left');
-        $builder->where('users_table.ROLE', '0');
-        $builder->orderBy('users_table.ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->db->table($this->table)
+            ->select("{$this->table}.*, salary_table.BASIC_SALARY, department_table.NAME as DEPARTMENT_NAME")
+            ->join('salary_table', "{$this->table}.ID = salary_table.USER_ID", 'left')
+            ->join('department_table', "{$this->table}.DEPARTMENT_ID = department_table.ID", 'left')
+            ->where("{$this->table}.ROLE", 0)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
     public function setUserDeactivate($id) {
-
-        if (!($this->isUserExistByID($id))) {
-            return 0;
-        }
-
-        $builder = $this->db->table($this->table);
-        $builder->where('ID', $id);
-        $builder->set('DEACTIVATE', 1);
-        $builder->update();
-        return 1;
+        $this->update($id, ['DEACTIVATE' => 1]);
+        return $this->db->affectedRows() > 0;
     }
     public function unsetUserDeactivate($id) {
-
-        if (!($this->isUserExistByID($id))) {
-            return 0;
-        }
-
-        $builder = $this->db->table($this->table);
-        $builder->where('ID', $id);
-        $builder->set('DEACTIVATE', 0);
-        $builder->update();
-        return 1;
+        $this->update($id, ['DEACTIVATE' => 0]);
+        return $this->db->affectedRows() > 0;
     }
     public function setColumnbyID($ID, $COLUMN, $VALUE) {
         $builder = $this->db->table($this->table);
@@ -344,5 +193,9 @@ class User extends Model {
         $builder->set($COLUMN, $VALUE);
         $builder->update();
         return $ID;
+    }
+    //------------ Private Functions----------//
+    private function findOneByEmail(string $email) {
+        return $this->asObject()->where('EMAIL', $email)->first();
     }
 }
