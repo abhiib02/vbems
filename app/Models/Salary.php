@@ -10,46 +10,32 @@ class Salary extends Model {
     protected $allowedFields = ['USER_ID', 'BASIC_SALARY', 'CREATED_ON', 'UPDATED_AT'];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
-    protected $db;
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
     public function insertSalary($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
+
     public function isSalaryExistByUserID($user_id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('USER_ID', $user_id);
-        $builder->where('BASIC_SALARY !=', NULL);
-        $query = $builder->countAllResults();
-
-        return ($query == 1) ? 1 : 0;
+        return $this->where('USER_ID', $user_id)
+            ->where('BASIC_SALARY IS NOT NULL', null, false)
+            ->countAllResults() > 0;
     }
+
     public function getAllSalaries() {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()->findAll();
     }
-    public function getSalaryByUserID($USER_ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('USER_ID', $USER_ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return ($result != null) ? $result->BASIC_SALARY : 0;
+    public function getSalaryByUserID($user_id) {
+        $salary = $this->select('BASIC_SALARY')
+            ->asObject()
+            ->where('USER_ID', $user_id)
+            ->first();
+
+        return $salary->BASIC_SALARY ?? null;
     }
-    public function setSalarybyID($ID, $SALARY) {
 
-        $builder = $this->db->table($this->table);
-        $builder->where('USER_ID', $ID);
-        $builder->set('BASIC_SALARY', $SALARY);
-        $builder->update();
-        return $ID;
+    public function setSalarybyID($user_id, $salary) {
+        return $this->where('USER_ID', $user_id)
+            ->set('BASIC_SALARY', $salary)
+            ->update() && $this->db->affectedRows() > 0;
     }
 }
