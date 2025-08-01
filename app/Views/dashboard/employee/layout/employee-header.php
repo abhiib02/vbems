@@ -64,7 +64,7 @@
                     </div>
                     <div class="row px-3">
 
-                        <?php if($ShowPunchOutButton):?>
+                        <?php if ($ShowPunchOutButton): ?>
                             <form action="/punch-out" method="post" id="punchoutform">
                                 <input type="hidden" name="user_id" value="<?= $id ?>">
                             </form>
@@ -72,8 +72,8 @@
                                 form="punchoutform" onclick="confirmBeforeAction('','Do You Really Want to Punchout ?');"
                                 data-bs-toggle="tooltip" data-bs-placement="right" data-bs-title="Punch Out"><i
                                     class="ri-logout-box-r-line"></i></button>
-                        <?php endif;?>
-                        
+                        <?php endif; ?>
+
                         <button onclick="changeTheme()" id="themeChangerBtn"
                             class="btn btn-outline-light fs-3 p-0 mb-1 hide-on-mobile"> <i
                                 class="ri-sun-fill"></i></button>
@@ -93,6 +93,12 @@
                                 class="ri-arrow-left-line"></i> Back</button>
                         <span class="navbar-brand mb-0 h1"><?= $title ?></span>
                         <div>
+                            <?php if ($ShowPunchOutButton): ?>
+                                <button type="submit" class="btn btn-outline-light mb-1 hide-on-desktop"
+                                    form="punchoutform" onclick="confirmBeforeAction('','Do You Really Want to Punchout ?');">
+                                    <i class="ri-logout-box-r-line"></i> Punchout
+                                </button>
+                            <?php endif; ?>
                             <button onclick="changeTheme()" id="themeChangerBtn-2"
                                 class="btn btn-outline-light mb-1 hide-on-desktop"> <i class="ri-sun-fill"></i></button>
                             <button onclick="confirmBeforeAction('/logout','Do You Want to Logout ?');" type="button"

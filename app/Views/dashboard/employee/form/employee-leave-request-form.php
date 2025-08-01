@@ -41,7 +41,6 @@
                     <?php if ($leavecredit >= 1): ?>
                         <button type="submit" class="btn btn-warning">Submit Request</button>
                     <?php elseif ($leavecredit < 1): ?>
-                        <input type="hidden" name="zeroleavecredit" value="1" required>
                         <button type="button" onclick="openDialogModal('leaveCreditAlert');" class="btn btn-warning">Submit Request</button>
                         <dialog id="leaveCreditAlert" class="col-lg-4 border-0 rounded shadow p-0">
                             <div class="card">
@@ -168,6 +167,7 @@
         const dateRange = document.getElementById('datepicker').value;
         const alertbox = document.getElementById('alertleavecredit');
         const leavedaysplaceholder = document.getElementById('diffInDays');
+        const form = document.getElementById('leave-request-form');
 
         // Split into two dates
         const [startStr, endStr] = dateRange.split("/");
@@ -188,6 +188,8 @@
         if (<?= $leavecredit ?> < diffInDays) {
             leavedaysplaceholder.textContent = (diffInDays > 1) ? diffInDays + ' Days' : diffInDays + ' Day';
             alertbox.removeAttribute('hidden');
+        } else {
+            alertbox.setAttribute('hidden', 1);
         }
 
     }
@@ -203,7 +205,7 @@
         zIndex: 10,
         LockPlugin: {
             minDays: 0,
-            inseparable: true,
+            inseparable: false,
             filter: (date) => {
 
                 if (department_leave_person_count > department_leaves_count) {

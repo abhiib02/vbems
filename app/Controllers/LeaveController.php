@@ -27,11 +27,16 @@ class LeaveController extends BaseController {
 
     public function requestLeaveProcess() {
 
-        $Department_id = $this->userModel->getDepartmentIDByUserID($this->request->getPost('user_id'));
+        $user_id = $this->request->getPost('user_id');
+        $Leavetype = $this->request->getPost('type');
+        $LeaveReason = $this->request->getPost('reason');
+        $Department_id = $this->userModel->getDepartmentIDByUserID($user_id);
         $deptLeaveCountPerson = $this->DepartmentModel->getLeavePersonsCountByDepartmentID($Department_id);
 
         $from_to_date_arr = explode('/', $this->request->getPost('from_to_date'));
         $days = $this->daysCountBetweenDates($from_to_date_arr[0], $from_to_date_arr[1]);
+
+        
 
         $from = new \DateTime($from_to_date_arr[0]);
         $to = new \DateTime($from_to_date_arr[1]);
@@ -39,7 +44,7 @@ class LeaveController extends BaseController {
         $FROM_DATE = $from->format('Y-m-d');
         $TO_DATE = $to->format('Y-m-d');
 
-        $isLeaveExist = $this->leaveModel->isLeaveExist($this->request->getPost('user_id'), $FROM_DATE, $TO_DATE);
+        $isLeaveExist = $this->leaveModel->isLeaveExist($user_id, $FROM_DATE, $TO_DATE);
 
         $isDepartmentLeaveExistonDate = $this->leaveModel->isDepartmentLeaveExistonDate($Department_id, $FROM_DATE, $TO_DATE);
         $isFromDateBetweenExistingLeave = $this->leaveModel->isDateExistBetweenFromAndTo($Department_id, $FROM_DATE);
@@ -62,15 +67,19 @@ class LeaveController extends BaseController {
             return $this->RedirectWithtoast("Leave Request Cannot be Processed, Department Leave Limit Reached", 'danger', '/my-leaves');
         }
 
+        $leavecredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
+
+        $zeroleavecredit = ($days < $leavecredit) ? 0 : 1 ;
+
         $LeaveRequestData = [
-            "USER_ID" => $this->request->getPost('user_id'),
+            "USER_ID" => $user_id,
             "DEPARTMENT_ID" => $Department_id,
             "FROM_DATE" => $from->format('Y-m-d'),
             "TO_DATE" => $to->format('Y-m-d'),
-            "TYPE" => $this->request->getPost('type'),
-            "ZEROLEAVECREDIT"=> $this->request->getPost('zeroleavecredit'),
+            "TYPE" => $Leavetype,
+            "ZEROLEAVECREDIT"=> $zeroleavecredit,
             "DAYS" => $days,
-            "REASON" => $this->request->getPost('reason'),
+            "REASON" => $LeaveReason,
             "SUNDAY_COUNT" => $this->countSundays($from_to_date_arr[0], $from_to_date_arr[1]),
             "STATUS" => 'Pending',
         ];
@@ -78,14 +87,14 @@ class LeaveController extends BaseController {
         $LeaveRequestDataEmail = [
             "NAME" => $this->data['name'],
             "EMAIL" => $this->data['email'],
-            "USER_ID" => $this->request->getPost('user_id'),
+            "USER_ID" => $user_id,
             "DEPARTMENT_ID" => $Department_id,
             "FROM_DATE" => $from->format('Y-m-d'),
             "TO_DATE" => $to->format('Y-m-d'),
-            "TYPE" => $this->request->getPost('type'),
-            "ZEROLEAVECREDIT" => $this->request->getPost('zeroleavecredit'),
+            "TYPE" => $Leavetype,
+            "ZEROLEAVECREDIT" => $zeroleavecredit,
             "DAYS" => $days,
-            "REASON" => $this->request->getPost('reason'),
+            "REASON" => $LeaveReason,
             "STATUS" => 'Pending',
         ];
 
