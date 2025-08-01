@@ -6,6 +6,7 @@ use CodeIgniter\Model;
 
 class LeaveCredit extends Model {
     protected $table = 'leavecredit_table';
+    protected $primaryKey = 'ID';
     protected $allowedFields = [
         'USER_ID',
         'LEAVECREDIT',
@@ -15,51 +16,39 @@ class LeaveCredit extends Model {
     protected $useTimestamps = true;
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
-    protected $db;
     protected $dateFormat = 'datetime';
 
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
+    
     public function insertLeaveCredit($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
+    
     public function setLeaveCreditByUserID($ID, $LEAVECREDIT) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('USER_ID', $ID);
-        $builder->set('LEAVECREDIT', $LEAVECREDIT);
-        $builder->update();
-        return $ID;
+        return $this->where('USER_ID', $ID)->set('LEAVECREDIT', $LEAVECREDIT)->update() && $this->db->affectedRows() > 0;    
     }
     public function getAllLeaveCredit() {
-
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->asObject()->findAll();
     }
-    public function getLeaveCreditByUserID($USER_ID) {
+    public function getLeaveCreditByUserID($user_id) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('USER_ID', $USER_ID);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return floor((float)$result->LEAVECREDIT * 2) / 2;
-        //return (float)$result->LEAVECREDIT;
-    }
-    public function isLeaveCreditExistByID($id) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select("*");
-        $builder->where('USER_ID', $id);
-        $query = $builder->get();
-        if ($query->getNumRows() > 0) {
-            return 1;
-        } else {
-            return 0;
+        $record = $this->select('LEAVECREDIT')
+            ->asObject()
+            ->where('USER_ID', $user_id)
+            ->first();
+
+        if (!$record || $record->LEAVECREDIT === null) {
+            return null;
         }
+
+        //return (float)$record->LEAVECREDIT;
+
+        // Round down to nearest 0.5 if that's the business rule
+        return floor((float) $record->LEAVECREDIT * 2) / 2;
+        
+    }
+    
+    public function isLeaveCreditExistByID($user_id) {
+        return $this->where('USER_ID', $user_id)->countAllResults() > 0;
     }
 }
