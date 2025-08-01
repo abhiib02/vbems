@@ -53,7 +53,7 @@ class OptionsController extends BaseController
         $value = $this->request->getPost($name);
         $Option = new Option();
         $Option->saveOption($name, $value);
-        return $this->RedirectWithtoast('Option Saved', 'Success', 'options.list');
+        return $this->RedirectWithtoast($name .' Option Saved', 'Success', 'options.list');
         
     }
 }
