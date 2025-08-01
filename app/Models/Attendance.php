@@ -6,195 +6,161 @@ use CodeIgniter\Model;
 
 class Attendance extends Model {
     protected $table = 'attendance_table';
-    public $db;
+    protected $primaryKey = 'ID';
     protected $allowedFields = [
-        'USER_ID',
         'DATE',
-        'PUNCH_IN',
         'PUNCH_OUT',
+        'HALF_DAY',
+        'USER_ID',
+        'TOTAL_USERCOUNT',
+        'BASE_SALARY',
         'CREATED_ON',
         'UPDATED_AT',
-        'TOTAL_USERCOUNT',
-        'BASE_SALARY'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
 
-
-    public function __construct() {
-        $this->db = \Config\Database::connect();
-    }
     public function insertEntry($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
     public function setAttendancePunchOutByUserID($user_id, $date) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $builder->set('PUNCH_OUT', 1);
-        $builder->update();
-        return $user_id;
+        return $this->where('DATE', $date)->where('USER_ID', $user_id)->set('PUNCH_OUT', 1)->update();
     }
     public function setAttendanceHalfDayByUserID($user_id, $date) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $builder->set('HALF_DAY', 1);
-        $builder->update();
-        return $user_id;
+        return $this->where('DATE', $date)->where('USER_ID', $user_id)->set('HALF_DAY', 1)->update();
     }
     public function isEntryExist($date, $user_id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->countAllResults();
-        if ($query > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $this->where('DATE', $date)->where('USER_ID', $user_id)->countAllResults() > 0;
     }
     public function isEntryPunchedOut($date, $user_id) {
-
-        $builder = $this->db->table($this->table);
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $builder->where('PUNCH_OUT', 1);
-        $query = $builder->countAllResults();
-        if ($query > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $this->where('DATE', $date)->where('USER_ID', $user_id)->where('PUNCH_OUT', 1)->countAllResults() > 0;
     }
     public function getEntryCreated($user_id, $date) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $user_id);
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->CREATED_ON;
+        $result = $this->asObject()
+            ->select('CREATED_ON')
+            ->where('DATE', $date)
+            ->where('USER_ID', $user_id)
+            ->first();
+        return $result?->CREATED_ON ?? null;
     }
     public function getTodayAttendance() {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('attendance_table.*, users_table.NAME, users_table.DESIGNATION');
-        $builder->join('users_table', 'users_table.ID = attendance_table.USER_ID');
-        $builder->where('DATE', date('Y-m-d'));
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $today = (new \DateTime('now'))->format('Y-m-d'); 
+        return $this->db->table($this->table)
+            ->select("{$this->table}.*, users_table.NAME, users_table.DESIGNATION")
+            ->join('users_table', "users_table.ID = {$this->table}.USER_ID")
+            ->where("{$this->table}.DATE", $today)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
     public function getAttendanceByDate($date) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('attendance_table.DATE,attendance_table.CREATED_ON , attendance_table.UPDATED_AT, users_table.NAME, users_table.ID, users_table.DESIGNATION');
-        $builder->join('users_table', 'users_table.ID = attendance_table.USER_ID');
-        $builder->where('DATE', $date);
-        $builder->orderBy('attendance_table.ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->db->table($this->table)
+            ->select("{$this->table}.DATE, {$this->table}.CREATED_ON, {$this->table}.UPDATED_AT, users_table.NAME, users_table.ID, users_table.DESIGNATION")
+            ->join('users_table', "users_table.ID = {$this->table}.USER_ID")
+            ->where("{$this->table}.DATE", $date)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
     public function getAllAttendanceofUser($USER_ID) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('USER_ID', $USER_ID);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        return $this->db->table($this->table)
+            ->where('USER_ID', $USER_ID)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
     public function isUserPresentonDate($USER_ID, $date) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('DATE', $date);
-        $builder->where('USER_ID', $USER_ID);
-        $query = $builder->countAllResults();
-        if ($query > 0) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return $this->db->table($this->table)
+            ->where('DATE', $date)
+            ->where('USER_ID', $USER_ID)
+            ->countAllResults() > 0;
     }
-    public function getAllAttendanceofUserByMonthYear($USER_ID, $MONTH, $YEAR) {
+    public function getAllAttendanceofUserByMonthYear($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('USER_ID', $USER_ID);
-        $builder->where('YEAR(DATE) =', $YEAR, false);
-        $builder->where('MONTH(DATE) =', $MONTH, false);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end = date('Y-m-t', strtotime($start)); // end of the month
+
+        return $this->db->table($this->table)
+            ->where('USER_ID', $user_id)
+            ->where("DATE >=", $start)
+            ->where("DATE <=", $end)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
-    public function getAllHalfDayAttendanceofUserByMonthYear($USER_ID, $MONTH, $YEAR) {
+    public function getAllHalfDayAttendanceofUserByMonthYear($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('USER_ID', $USER_ID);
-        $builder->where('YEAR(DATE) =', $YEAR, false);
-        $builder->where('MONTH(DATE) =', $MONTH, false);
-        $builder->where('HALF_DAY',1);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end = date('Y-m-t', strtotime($start)); // gets last day of the month
+
+        return $this->db->table($this->table)
+            ->where('USER_ID', $user_id)
+            ->where('HALF_DAY', 1)
+            ->where('DATE >=', $start)
+            ->where('DATE <=', $end)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
-    public function getAllFullDayAttendanceofUserByMonthYear($USER_ID, $MONTH, $YEAR) {
+    public function getAllFullDayAttendanceofUserByMonthYear($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('USER_ID', $USER_ID);
-        $builder->where('YEAR(DATE) =', $YEAR, false);
-        $builder->where('MONTH(DATE) =', $MONTH, false);
-        $builder->where('HALF_DAY', 0);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end = date('Y-m-t', strtotime($start));
+
+        return $this->db->table($this->table)
+            ->where('USER_ID', $user_id)
+            ->where('HALF_DAY', 0)
+            ->where('DATE >=', $start)
+            ->where('DATE <=', $end)
+            ->orderBy("{$this->table}.ID", 'desc')
+            ->get()
+            ->getResult();
     }
-    public function getBaseSalaryofMonthYearbyUserid($USER_ID, $MONTH, $YEAR) {
+    public function getBaseSalaryofMonthYearbyUserid($user_id, $month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('MIN(BASE_SALARY) AS BASE_SALARY');
-        $builder->where('USER_ID', $USER_ID);
-        $builder->where('YEAR(DATE) =', $YEAR, false);
-        $builder->where('MONTH(DATE) =', $MONTH, false);
-        $builder->orderBy('ID', 'desc');
-        $query = $builder->get();
-        $result = $query->getRow();
-        return $result->BASE_SALARY;
+        $start = sprintf('%04d-%02d-01', $year, $month);
+        $end = date('Y-m-t', strtotime($start));
+
+        $result = $this->db->table($this->table)
+            ->select('MIN(BASE_SALARY) AS BASE_SALARY')
+            ->where('USER_ID', $user_id)
+            ->where('DATE >=', $start)
+            ->where('DATE <=', $end)
+            ->get()
+            ->getRow();
+
+        return $result ? (float) $result->BASE_SALARY : null;
     }
     public function getTotalAttendeesonDate($date) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('*');
-        $builder->where('DATE', $date);
-        $count = $builder->countAllResults();
-        return $count + 1;
+        $count = $this->db->table($this->table)
+            ->where('DATE', $date)
+            ->countAllResults();
+
+        // Added logic to increment TOTAL_USERCOUNT from 0 to 1 upon the first attendance entry.
+        // This ensures the user who performs the initial punch-in is included in the count.
+
+        return $count + 1; 
     }
     public function getEachDayAttendanceDataofMonth($month, $year) {
 
-        $builder = $this->db->table($this->table);
-        $builder->select('DATE, MAX(TOTAL_USERCOUNT) as TOTAL_USERCOUNT');
-        $builder->where('MONTH(DATE) =', $month, false);
-        $builder->where('YEAR(DATE) =', $year, false);
-        $builder->groupBy('DATE');
-        $builder->orderBy('DATE', 'ASC');
-        $query = $builder->get();
-        $result = $query->getResult();
-        return $result;
+        $startDate = sprintf('%04d-%02d-01', $year, $month);
+        $endDate = date('Y-m-t', strtotime($startDate));
+
+        return $this->db->table($this->table)
+            ->select('DATE, MAX(TOTAL_USERCOUNT) AS TOTAL_USERCOUNT')
+            ->where('DATE >=', $startDate)
+            ->where('DATE <=', $endDate)
+            ->groupBy('DATE')
+            ->orderBy('DATE', 'ASC')
+            ->get()
+            ->getResult();
     }
     public function getSumofTotalUserCountofmonthyear($year) {
 
