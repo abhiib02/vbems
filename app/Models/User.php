@@ -29,7 +29,7 @@ class User extends Model {
     public function getUser($email) {
         return $this->asObject()->where('EMAIL', $email)->first();
     }
-    public function getUserByID(int $id){
+    public function getUserByID(int $id) {
         return $this->asObject()->find($id);
     }
     public function getUserName($email) {
@@ -50,7 +50,7 @@ class User extends Model {
         $user = $this->select('EMAIL')->asArray()->find($ID);
         return $user['EMAIL'] ?? null;
     }
-    public function getUserIDByBiometricID(string $biometricID){
+    public function getUserIDByBiometricID(string $biometricID) {
         $user = $this->select('ID')
             ->asArray()
             ->where('BIOMETRIC_ID', $biometricID)
@@ -69,7 +69,7 @@ class User extends Model {
         return $this->where('EMAIL', $email)->countAllResults() > 0;
     }
     public function isUserDeactivated($email) {
-        return $this->where('EMAIL', $email)->where('DEACTIVATE',1)->countAllResults() > 0;
+        return $this->where('EMAIL', $email)->where('DEACTIVATE', 1)->countAllResults() > 0;
     }
     public function isUserExistByID($id) {
         return $this->where('ID', $id)->countAllResults() > 0;
