@@ -16,13 +16,13 @@ class User extends Model {
     public function insertUser($data) {
         return $this->insert($data);
     }
-    public function updateUser($id, $data): bool {
+    public function updateUser($id, $data){
         return $this->update($id, $data);
     }
     public function getAllUsers() {
         return $this->asObject()->findAll();
     }
-    public function getUserID(string $email): ?int {
+    public function getUserID(string $email){
         $user = $this->asObject()->select('ID')->where('EMAIL', $email)->first();
         return $user->ID ?? null;
     }
