@@ -1,5 +1,5 @@
 <?php include __DIR__ . '../../components/salaryCalculationVars.php' ?>
-<?php $Latestleaves = $leaves[0] ?? ''; ?>
+<?php $Latestleave = $leaves[0] ?? ''; ?>
 <div class="p-1 mb-4 maingradient rounded-3">
     <div class="container-fluid py-1">
         <h1 class="display-6 fw-bold text-light">Welcome, <?= $name ?></h1>
@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <?php if ($Latestleaves): ?>
+                <?php if ($Latestleave): ?>
                     <table class="table">
                         <thead>
                             <tr>
@@ -36,11 +36,11 @@
                             </tr>
                         </thead>
                         <tr>
-                            <td><?= $Latestleaves->FROM_DATE ?></td>
-                            <td><?= $Latestleaves->TO_DATE ?></td>
-                            <td><?= $Latestleaves->DAYS ?></td>
-                            <td><?= $Latestleaves->CREATED_ON ?></td>
-                            <td class="<?= $Latestleaves->STATUS ?>"><?= $Latestleaves->STATUS ?></td>
+                            <td><?= $Latestleave->FROM_DATE ?></td>
+                            <td><?= $Latestleave->TO_DATE ?></td>
+                            <td><?= $Latestleave->DAYS ?></td>
+                            <td><?= $Latestleave->CREATED_ON ?></td>
+                            <td class="<?= $Latestleave->STATUS ?>"><?= $Latestleave->STATUS ?></td>
                         </tr>
                     </table>
                 <?php else: ?>
