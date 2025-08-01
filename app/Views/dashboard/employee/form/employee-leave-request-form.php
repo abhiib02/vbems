@@ -8,6 +8,7 @@
                 <form action="/requestleaveprocess" id="leave-request-form" method="POST">
                     <div class="row">
                         <input type="hidden" name="user_id" value="<?= $id ?>">
+                        <input type="hidden" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" />
                         <div class="col-lg-8">
                             <div class="mb-3">
                                 <label for="from_to_date" class="form-label">From Date / To Date</label>

@@ -4,8 +4,7 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Option extends Model
-{
+class Option extends Model {
     protected $table = 'options_table';
     protected $primaryKey = 'ID';
     protected $allowedFields = [
@@ -16,35 +15,22 @@ class Option extends Model
     ];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
-    protected $db;
+
     public function insertOption($data) {
-        return $this->db->table($this->table)->insert($data);
+        return $this->insert($data);
     }
-    public function getAllOptions()
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table($this->table);
-        $builder->select("*");
-        $query = $builder->get();
-        $result = $query->getResultObject();
-        return $result;
+
+    public function getAllOptions() {
+        return $this->asObject()->findAll();
     }
-    public function getOptionValue($name)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table($this->table);
-        $builder->select("*");
-        $builder->where('name', $name);
-        $query = $builder->get();
-        $result = $query->getRowObject();
-        return (is_numeric($result->VALUE)) ? (int)$result->VALUE : $result->VALUE;
+    public function getOptionValue($name) {
+        $row = $this->asObject()->where('NAME', $name)->first();
+
+        if (!$row) { return null; }
+
+        return is_numeric($row->VALUE) ? (int)$row->VALUE : $row->VALUE;
     }
-    public function saveOption($name, $value)
-    {
-        $db = \Config\Database::connect();
-        $builder = $db->table($this->table);
-        $builder->set("value", $value);
-        $builder->where('name', $name);
-        $builder->update();
+    public function saveOption($name, $value) {
+        $this->where('NAME', $name)->set('VALUE', $value)->update();
     }
 }
