@@ -294,7 +294,7 @@ class AttendanceController extends BaseController {
         $end   = new \DateTime(date('Y-m-d G:i:s'));
         $interval = $start->diff($end);
         $hoursPassedAfterEntry = ($interval->days * 24) + $interval->h + ($interval->i / 60);
-        echo "Hours Passed After Entry: $hoursPassedAfterEntry";
+        //echo "Hours Passed After Entry: $hoursPassedAfterEntry";
         return $hoursPassedAfterEntry;
     }
     protected function getTotalSundaysInMonth($month, $year) {
