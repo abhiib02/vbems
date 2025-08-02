@@ -10,6 +10,7 @@ class Option extends Model {
     protected $allowedFields = [
         'NAME',
         'VALUE',
+        'TYPE',
         'CREATED_ON',
         'UPDATED_AT'
     ];

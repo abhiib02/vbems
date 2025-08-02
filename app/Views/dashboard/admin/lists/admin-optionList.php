@@ -17,24 +17,30 @@
             </div>
         </div>
     </div>
-    <div class="card-body">            
-            <table class="table table-striped">
-                <thead>
-                    <th>Option Name</th>
-                    <th>Option Value</th>
-                </thead>
-                <?php foreach ($options as $index => $option) : ?>
-                    <tr>
-                        <td><?= $option->NAME ?></td>
-                        <td>
-                            <form action="/option/<?= $option->NAME ?>" method="post" class="d-flex">
+    <div class="card-body">
+        <table class="table table-striped">
+            <thead>
+                <th>Option Name</th>
+                <th>Option Value</th>
+            </thead>
+            <?php foreach ($options as $index => $option) : ?>
+                <tr>
+                    <td><?= $option->NAME ?></td>
+                    <td>
+                        <form action="/option/<?= $option->NAME ?>" method="POST" class="d-flex">
+                            <?php if ($option->TYPE == 1): ?>
                                 <input type="text" name="<?= $option->NAME ?>" value="<?= $option->VALUE ?>" onchange="this.form.submit()" class="form-control" required>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </table>
-        </div>
+                            <?php else: ?>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" role="switch" name="<?= $option->NAME ?>" onchange="this.form.submit()" id="switchCheckChecked<?= $index?>" <?= ($option->VALUE == 1) ? 'checked':''?>>
+                                </div>
+                            <?php endif; ?>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
     </div>
+</div>
 
 </div>
