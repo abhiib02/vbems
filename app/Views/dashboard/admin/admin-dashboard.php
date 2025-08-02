@@ -110,14 +110,14 @@
 <script>
     let month_data = [];
     let HolidaysArr = <?= $HolidaysArr ?>;
-
+    const totalEmp = <?= $TotalEmployees ?>;
     const currentYear = new Date().getFullYear();
     const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
     const DATA_MONTHS = <?= $yearlyAttendance ?>;
     DATA_MONTHS.forEach((month, index) => {
-        month_data[month.MONTH - 1] = month.SUM_OF_USERCOUNT / (getWorkingDays(currentYear, month.MONTH) -
-            HolidaysArr[index]);
+        month_data[month.MONTH - 1] = 
+        ((month.SUM_OF_USERCOUNT / (getWorkingDays(currentYear, month.MONTH) - HolidaysArr[month.MONTH - 1])) / totalEmp)*100 ;
     })
 
     var ctx = document.getElementById("annual-attendance").getContext("2d");
@@ -128,7 +128,7 @@
                 'October', 'November', 'December'
             ],
             datasets: [{
-                label: 'Person Attended Each Working Day',
+                label: 'Attendence Strength %',
                 data: month_data,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -152,7 +152,7 @@
         options: {
             plugins: {
                 legend: {
-                    display: false
+                    display: true
                 }
             },
             scales: {
