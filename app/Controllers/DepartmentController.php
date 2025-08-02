@@ -4,15 +4,17 @@ namespace App\Controllers;
 
 
 use App\Models\Department;
+use App\Models\User;
 use Config\Services;
 
 class DepartmentController extends BaseController
 {   
-    public $DepartmentModel;
+    public $DepartmentModel,$UserModel;
     public $data = [];
     public function __construct(){
         $this->session = Services::session();
         $this->DepartmentModel = new Department();
+        $this->UserModel = new User();
 
     }
     public function AddDepartmentProcess(){
@@ -29,7 +31,14 @@ class DepartmentController extends BaseController
                 'errors' => [
                     'required' => 'Department Name is required.',
                 ]
-            ]
+            ],
+            'leave_person_count' => [
+                'rules' => 'required|integer',
+                'errors' => [
+                    'required' => 'Leave Person Count is required.',
+                    'integer'  => 'Leave Person Count must be a number.',
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -60,11 +69,19 @@ class DepartmentController extends BaseController
         // check input valid or not
         $rules = [
             'department_name' => [
-                'rules' => 'required',
+                'rules' => 'required|unique[departments_table.NAME,id,{id}]',
                 'errors' => [
                     'required' => 'Department Name is required.',
                 ]
+            ],
+            'leave_person_count' => [
+                'rules' => 'required|integer',
+                'errors' => [
+                    'required' => 'Leave person count is required.',
+                    'integer' => 'Leave person count must be an integer.',
+                ]
             ]
+
         ];
 
         if (!$this->validate($rules)) {
@@ -74,7 +91,6 @@ class DepartmentController extends BaseController
             ];
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'departments.list');
-            
         }
         
         $this->DepartmentModel->updateDepartment($id,$departmentData);
@@ -87,8 +103,10 @@ class DepartmentController extends BaseController
         if (!($this->DepartmentModel->isDepartmentExistID($id))) {
             return $this->RedirectWithtoast('Department Doesnt Exist', 'danger', 'departments.list');
         }
-
+        if ($this->UserModel->isDepartmentUsed($id)) {
+            return $this->RedirectWithtoast('Department has active employees. Cannot delete.', 'warning', 'departments.list');
+        }
         $this->DepartmentModel->deleteDepartment($id);
-        return $this->RedirectWithtoast('Department Deleted', 'danger', 'departments.list');
+        return $this->RedirectWithtoast('Department Deleted', 'success', 'departments.list');
     }
 }

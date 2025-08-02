@@ -77,6 +77,9 @@ class User extends Model {
     public function isBiometricIDExist($bid) {
         return $this->where('BIOMETRIC_ID', $bid)->countAllResults() > 0;
     }
+    public function isDepartmentUsed($department_id) {
+        return $this->where('DEPARTMENT_ID', $department_id)->countAllResults() > 0;
+    }
     public function delUser($id) {
         $this->delete($id);
         return $this->db->affectedRows() > 0;
