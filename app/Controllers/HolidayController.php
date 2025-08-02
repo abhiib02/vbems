@@ -15,6 +15,8 @@ class HolidayController extends BaseController {
     }
 
     public function addHolidayProcess() {
+        $CurrentDate = new \DateTime();
+        
         $HolidayData = [
             "DATE" => $this->request->getPost('date'),
             "HOLIDAY" => $this->request->getPost('holiday'),
@@ -42,6 +44,13 @@ class HolidayController extends BaseController {
             ];
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'holidays.list');
+        }
+        $CurrentYear = $CurrentDate->format("Y");
+        $InputDate = new \DateTime($HolidayData["DATE"]);
+        $InputYear = $InputDate->format("Y");
+        
+        if($CurrentYear != $InputYear){
+            return $this->RedirectWithtoast("Year Must be $CurrentYear | Only current year holidays are permitted", 'danger', 'holidays.list');
         }
         $isHolidayExist = $this->HolidayModel->isHolidayExist($HolidayData['DATE']);
         if ($isHolidayExist) {
