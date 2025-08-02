@@ -17,7 +17,7 @@ class Attendance extends Model {
         'CREATED_ON',
         'UPDATED_AT',
     ];
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
 
