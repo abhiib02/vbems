@@ -148,7 +148,7 @@ class AdminDashboardController extends BaseController {
     public function holidaysList() {
         $additionalData = [
             'title' => 'Holidays List',
-            'holidays' => $this->HolidayModel->getAllHolidays(),
+            'holidays' => $this->HolidayModel->getAllHolidaysofCurrentYear(),
         ];
         $this->data = array_merge($this->data, $additionalData);
         return $this->renderAdminPage('dashboard/admin/lists/admin-holidaysList', $this->data);

@@ -47,6 +47,13 @@ class Holiday extends Model {
     public function getAllHolidays() {
         return $this->asObject()->orderBy('DATE', 'asc')->findAll();
     }
+    public function getAllHolidaysofCurrentYear() {
+        $date = date('Y');
+        return $this->asObject()
+            ->where('YEAR(DATE)', $date, false)
+            ->orderBy('DATE', 'asc')
+            ->findAll();
+    }
     public function getAllHolidaysofMonthYear($month, $year) {
 
         return $this->asObject()

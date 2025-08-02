@@ -1,14 +1,20 @@
 <div class="card height-on-mobile">
     <div class="card-header">
         <div class="d-flex justify-content-between">
-            <h5 class="fw-bold m-0">Holidays List</h5>
+            <div class="d-flex gap-2">
+                <h5 class="fw-bold m-0"><?= date('Y') ?> Holidays List</h5>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="liveAlertBtn"><i class="ri-information-fill"></i></button>
+            </div>
+
             <div>
                 <button class="btn btn-sm btn-success" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasRight-Holiday"><i class="ri-add-circle-fill"></i> Add Holiday</button>
             </div>
         </div>
     </div>
-
+    <div class="position-absolute" id="liveAlertPlaceholder">
+        
+    </div>
     <div class="card-body">
         <table class="table theme-text-color holiday-table table-striped">
             <thead>
@@ -82,3 +88,25 @@
         </div>
     </div>
 </div>
+
+<script>
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+    const appendAlert = (message, type) => {
+        const wrapper = document.createElement('div')
+        wrapper.innerHTML = [
+            `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+            `   <div>${message}</div>`,
+            '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+            '</div>'
+        ].join('')
+
+        alertPlaceholder.append(wrapper)
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+        alertTrigger.addEventListener('click', () => {
+            appendAlert('<strong>Note:</strong> This view displays holidays applicable to the <strong>current calendar year only</strong>.<br> Holidays from <strong>previous years are securely retained</strong> in the system database to maintain the integrity of <strong>attendance records and historical reporting</strong>.', 'info')
+        })
+    }
+</script>
