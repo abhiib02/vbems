@@ -28,6 +28,7 @@ class AttendanceController extends BaseController {
     public $LEAVE_CREDIT_PER_MONTH = 1.5;
     public $HALFDAY_ENTRY_TIME = '11:00:00';
     public $HALFDAY_EXIT_TIME = '17:00:00';
+    public $PUNCH_OUT_BUFFER_HOURS = 1;
 
     public function __construct() {
         $this->session = Services::session();
@@ -45,8 +46,12 @@ class AttendanceController extends BaseController {
     }
 
     public function AttendanceByDate() {
-
-        $date     = $this->request->getGet('date');
+        $date = $this->request->getGet('date');
+        // Basic validation
+        if (!$this->isValidDate($date)) {
+            return $this->response->setStatusCode(400)
+                ->setJSON(['error' => 'Invalid date format.']);
+        }
         $dateAttendance = $this->AttendanceModel->getAttendanceByDate($date);
         return $this->response->setJSON($dateAttendance);
     }
@@ -64,25 +69,19 @@ class AttendanceController extends BaseController {
 
         if ($isEntryExist && !($isEntryPunchedOut)) {
 
-            // Check For half day on Punch out
-            $exitTime = new \DateTime(); // now
-            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
-
-            if ($exitTime < $cutoff) {
+            if ($this->checkHalfDayOnPunchOut()) {
                 $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
             }
-
-            $hoursTimeforPunchout = 1;
             $hoursPassedAfterEntry = $this->hoursPassedAfterEntry($user_id, $date);
 
-            if ($hoursPassedAfterEntry > $hoursTimeforPunchout) {
+            if ($hoursPassedAfterEntry > $this->PUNCH_OUT_BUFFER_HOURS) {
                 $this->AttendanceModel->setAttendancePunchOutByUserID($user_id, $date);
                 return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.login');
             } else {
-                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+                return $this->RedirectWithtoast('Punched in recently. Please wait.', 'warning', 'auth.login');
             }
         }
-        if (!$isEntryExist) {
+        elseif (!$isEntryExist) {
 
             $AttandenceData = $this->prepareAttendanceData($user_id, $date);
 
@@ -98,7 +97,7 @@ class AttendanceController extends BaseController {
     public function AttendanceEntryProcessWhileLogin($USER_ID) {
 
         if(!$this->flag['EnableMarkAttendanceOnLogin']){
-          return 0;  
+            return 0;
         }
         $date     = date('Y-m-d');
         $user_id  = $USER_ID;
@@ -111,9 +110,12 @@ class AttendanceController extends BaseController {
             $this->addDayLeaveCredit($user_id);
             $this->checkandCreateSandwichLeave($user_id, $date);
 
-            return $this->RedirectWithtoast('Attendance Marked', 'Success', '');
+            log_message('info', "Attendance marked for USER_ID: {$user_id} on login.");
+
+            return $this->RedirectWithtoast('Attendance Marked', 'Success', 'employee.account');
         }
         return 0;
+        
     }
     public function AttendanceEntryPunchOutProcess() {
 
@@ -124,27 +126,22 @@ class AttendanceController extends BaseController {
         $isEntryPunchedOut = $this->AttendanceModel->isEntryPunchedOut($date, $user_id);
         
         if($isEntryPunchedOut){
-            return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.login');
+            return $this->RedirectWithtoast('Attendance Punch Out Already Marked', 'warning', 'auth.login');
         }
         
-        if ($isEntryExist && !($isEntryPunchedOut)) {    
+        elseif ($isEntryExist && !($isEntryPunchedOut)) {    
 
-            // Check For half day on Punch out
-            $exitTime = new \DateTime(); // now
-            $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
-
-            if ($exitTime < $cutoff) {
+            if($this->checkHalfDayOnPunchOut()){
                 $this->AttendanceModel->setAttendanceHalfDayByUserID($user_id, $date);
             }
-
-            $hoursTimeforPunchout = 1;
+            
             $hoursPassedAfterEntry = $this->hoursPassedAfterEntry($user_id, $date);
 
-            if ($hoursPassedAfterEntry > $hoursTimeforPunchout) {
+            if ($hoursPassedAfterEntry > $this->PUNCH_OUT_BUFFER_HOURS) {
                 $this->AttendanceModel->setAttendancePunchOutByUserID($user_id, $date);
                 return $this->RedirectWithtoast('Attendance Punch Out Marked', 'Success', 'auth.logout');
             } else {
-                return $this->RedirectWithtoast('Attendance Already Marked', 'warning', 'auth.logout');
+                return $this->RedirectWithtoast('Punched in recently. Please wait.', 'warning', 'auth.logout');
             }
         }
         return 0;
@@ -244,10 +241,10 @@ class AttendanceController extends BaseController {
         var_dump($this->LeaveModel->isSandwichLeave($user_id, $prevSaturdayDate));
         var_dump($isHolidayExistOnPrevMonday);
         var_dump($isHolidayExistOnPrevSaturday);
-        var_dump($checkNotifiedSaturdayLeave && $checkNotifiedMondayLeave);
-        var_dump(($checkNotifiedSaturdayLeave === 0) && ($checkUnAttendedMondayLeave === 1));
-        var_dump(($checkUnAttendedSaturdayLeave === 0) && ($checkNotifiedMondayLeave === 1));
-        var_dump(($checkUnAttendedSaturdayLeave === 0) && ($checkUnAttendedMondayLeave === 0));
+        var_dump($ApprovedPrevMondayLeave && $ApprovedPrevSaturdayLeave);
+        var_dump(($presentOnPrevMonday === 0) && ($ApprovedPrevSaturdayLeave === 0));
+        var_dump(($ApprovedPrevMondayLeave === 1) && ($presentOnPrevSaturday === 0));
+        var_dump(($presentOnPrevMonday === 0) && ($presentOnPrevSaturday === 0));
         */
 
         if ($PrevSaturdaybeforecreatedOn) {
@@ -318,19 +315,35 @@ class AttendanceController extends BaseController {
     protected function prepareAttendanceData($user_id, $date) {
         $data = [
             'DATE' => $date,
-            'HALF_DAY' => 0,
+            'HALF_DAY' => $this->checkHalfDayOnPunchIn(),
             'USER_ID' => $user_id,
             'TOTAL_USERCOUNT' => $this->AttendanceModel->getTotalAttendeesonDate($date),
             'BASE_SALARY' => $this->SalaryModel->getSalaryByUserID($user_id),
         ];
-        // Check For half day on Punch in
-        $entryTime = new \DateTime(); // now
-        $cutoff = new \DateTime(date('Y-m-d')  . ' ' . $this->HALFDAY_ENTRY_TIME);
-        if ($entryTime > $cutoff) {
-            $data['HALF_DAY'] = 1;
-        }
+        
         return $data;
     }
     //---------------- Protected Class Function End-----------------------//
+    protected function checkHalfDayOnPunchIn(){
+    // Check For half day on Punch in
+        $entryTime = new \DateTime(); // now
+        $cutoff = new \DateTime(date('Y-m-d')  . ' ' . $this->HALFDAY_ENTRY_TIME);
+        if ($entryTime > $cutoff) {
+            return 1;
+        }
+        return 0;
+    }
+    protected function checkHalfDayOnPunchOut(){
+        // Check For half day on Punch out
+        $exitTime = new \DateTime(); // now
+        $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
 
+        if ($exitTime < $cutoff) {
+            return 1;
+        }
+        return 0;
+    }
+    private function isValidDate($date) {
+        return \DateTime::createFromFormat('Y-m-d', $date) !== false;
+    }
 }
