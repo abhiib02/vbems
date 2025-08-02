@@ -49,20 +49,23 @@ class AdminDashboardController extends BaseController {
         $this->data['title'] = 'Admin Dashboard';
 
         $AllHolidaysCount = $this->HolidayModel->getAllHolidaysofYear($this->data['year']);
-        $HolidaysArr = [];
+
+        $holidayMap = array_fill(1, 12, 0);
+        foreach ($AllHolidaysCount as $row) {
+            $holidayMap[(int)$row->MONTH_NUMBER] = (int)$row->HOLIDAY_COUNT;
+        }
         for ($i = 1; $i <= 12; $i++) {
-            $HolidaysCount = $AllHolidaysCount[$i - 1]->HOLIDAY_COUNT;
-            $sundaysCount = $this->getTotalSundaysInMonth($i, $this->data['year']);
-            array_push($HolidaysArr, ($HolidaysCount + $sundaysCount));
+            $sundays = $this->getTotalSundaysInMonth($i, $this->data['year']);
+            $HolidaysArr[] = $holidayMap[$i] + $sundays;
         }
         
         $data =[
             'todayattendance'=> $this->AttendanceModel->getTodayattendance(),
             'TotalEmployees' => $this->UserModel->getAllEmployeesCount(),
-            'yearlyAttendance' => json_encode($this->AttendanceModel->getSumofTotalUserCountofmonthyear($this->data['year'])),
             'nextHoliday' => $this->HolidayModel->getNextHoliday(),
             'TotalDepartments' => $this->DepartmentModel->getAllDepartmentsCount(),
-            'HolidaysArr'=> json_encode($HolidaysArr)
+            'yearlyAttendance' => $this->AttendanceModel->getSumofTotalUserCountofmonthyear($this->data['year']),
+            'HolidaysArr'=> $HolidaysArr,
         ];
 
         $this->data = array_merge($this->data, $data);
@@ -72,18 +75,21 @@ class AdminDashboardController extends BaseController {
 
         $this->data['title'] = 'Employees List';
 
-        $data = [
+        $additionalData  = [
             'employees' => $this->UserModel->getAllEmployeesWithSalaryandDepartment(),
             'departments' => $this->DepartmentModel->getAllDepartments(),
         ];
 
-        $this->data = array_merge($this->data, $data);
+        $this->data = array_merge($this->data, $additionalData);
 
         return $this->renderAdminPage('dashboard/admin/lists/admin-employeeList', $this->data);
     }
     public function leaveRequestsList($status = "pending") {
+
         $status = strtolower($status);
+
         $validStatuses = ['pending', 'approved', 'rejected'];
+
         if (!in_array($status, $validStatuses)) {
             return $this->RedirectWithtoast('Unknown Status', 'danger', 'leaveRequests.list');
         }
@@ -93,22 +99,25 @@ class AdminDashboardController extends BaseController {
 
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
 
-        if($status == "pending") {
-            $this->data['leaveRequests'] = $this->LeaveModel->getAllPendingLeaveRequest();
+        switch ($status) {
+            case 'pending':
+                $this->data['leaveRequests'] = $this->LeaveModel->getAllPendingLeaveRequest();
+                break;
+            case 'approved':
+                $this->data['leaveRequests'] = $this->LeaveModel->getAllApprovedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
+                break;
+            case 'rejected':
+                $this->data['leaveRequests'] = $this->LeaveModel->getAllRejectedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
+                break;
         }
-        if ($status == "approved") {
-            $this->data['leaveRequests'] = $this->LeaveModel->getAllApprovedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
-        }
-        if ($status == "rejected") {
-            $this->data['leaveRequests'] = $this->LeaveModel->getAllRejectedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
-        }
+
         return $this->renderAdminPage('dashboard/admin/lists/admin-leaveRequests', $this->data);
     }
     public function attendance() {
         
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
 
-        $data = [
+        $additionalData = [
             'title' => $this->getMonthName($this->data['month']) . ' ' . $this->data['year'] . ' Attendance',
             'all_employees_count' => $this->UserModel->getAllEmployeesCount(),
             'Holidays' =>  $this->HolidayModel->getAllHolidaysofMonthYear($this->data['month'], $this->data['year']),
@@ -116,7 +125,7 @@ class AdminDashboardController extends BaseController {
             'today_strength' => $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d')),
         ];
         
-        $this->data = array_merge($this->data, $data);
+        $this->data = array_merge($this->data, $additionalData);
 
         return $this->renderAdminPage('dashboard/admin/attendance/admin-attendance', $this->data);
     }
@@ -127,25 +136,37 @@ class AdminDashboardController extends BaseController {
         }
         
         $userData = $this->UserModel->getUserByID($id);
-        $this->data['title'] = $userData->NAME . ' Attendance';
-        $this->data['employeename'] = $userData->NAME;
-        $this->data['joiningDate'] = explode(' ', $userData->CREATED_ON)[0];
+        $additionalData = [
+            'title' => $userData->NAME . ' Attendance',
+            'employeename' => $userData->NAME,
+            'joiningDate' => explode(' ', $userData->CREATED_ON)[0],
+        ];
         $this->data = array_merge($this->data, $this->getAllDataforAdmin_EmployeeAttendance($id));
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderAdminPage('dashboard/admin/attendance/admin-employeeattendance', $this->data);
     }
     public function holidaysList() {
-        $this->data['title'] = 'Holidays List';
-        $this->data['holidays'] = $this->HolidayModel->getAllHolidays();
+        $additionalData = [
+            'title' => 'Holidays List',
+            'holidays' => $this->HolidayModel->getAllHolidays(),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderAdminPage('dashboard/admin/lists/admin-holidaysList', $this->data);
     }
     public function departmentsList() {
-        $this->data['title'] = 'Departments List';
-        $this->data['departments'] = $this->DepartmentModel->getAllDepartments();
+        $additionalData = [
+            'title' => 'Departments List',
+            'departments' => $this->DepartmentModel->getAllDepartments(),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderAdminPage('dashboard/admin/lists/admin-departmentList', $this->data);
     }
     public function optionsList() {
-        $this->data['title'] = 'Options List';
-        $this->data['options'] = $this->OptionModel->getAllOptions();
+        $additionalData = [
+            'title' => 'Options List',
+            'options' => $this->OptionModel->getAllOptions(),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderAdminPage('dashboard/admin/lists/admin-optionList', $this->data);
     }
     //---------------- Internal Functions -----------------------//

@@ -45,32 +45,46 @@ class EmployeeDashboardController extends BaseController {
     //------------------ Employee View Functions ---------------------//
     public function EmployeeDashboard() {
         $this->data = $this->getAllDataforEmployeeDashboard();
-        $this->data['ShowPunchOutButton'] = $this->OptionModel->getOptionValue('ShowPunchOutButton');
-        $this->data['title'] = $this->data['name'] . ' Dashboard';
+        $additionalData = [
+            'title' => $this->data['name'] . ' Dashboard',
+            'ShowPunchOutButton' => $this->OptionModel->getOptionValue('ShowPunchOutButton'),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderEmployeePage('dashboard/employee/employee-dashboard', $this->data);
     }
     public function EmployeeProfile() {
+        $employee = $this->UserModel->getUser($this->data['email']);
 
-        $this->data['employee'] = $this->UserModel->getUser($this->data['email']);
-        $this->data['salary'] = $this->SalaryModel->getSalaryByUserID($this->data['id']);
-        $this->data['DepartmentName'] = $this->DepartmentModel->getDepartmentNameByDepartmentID($this->data['employee']->DEPARTMENT_ID);
-        $this->data['title'] = 'My Profile';
+        $additionalData = [
+            'title' => 'My Profile',
+            'employee' => $employee,
+            'salary' => $this->SalaryModel->getSalaryByUserID($this->data['id']),
+            'DepartmentName' => $this->DepartmentModel->getDepartmentNameByDepartmentID($employee->DEPARTMENT_ID),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderEmployeePage('dashboard/employee/employee-profile', $this->data);
     }
     public function EmployeeLeaves() {
-        $this->data['leaves'] = $this->LeaveModel->getLeavesByUserID($this->data['id']);
-        $this->data['leavecredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']);
-        $this->data['title'] = 'My Leaves';
+        $additionalData = [
+            'title' => 'My Leaves',
+            'leaves' => $this->LeaveModel->getLeavesByUserID($this->data['id']),
+            'leavecredit' => $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderEmployeePage('dashboard/employee/lists/employee-leaves', $this->data);
     }
     public function EmployeeLeaveRequestForm() {
-        $this->data['title'] = 'Leave Request Form';
-        $dept_id = $this->UserModel->getDepartmentIDByUserID($this->data['id']);
-        $this->data['leavecredit'] = $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']);
-        $this->data['department_leaves'] = $this->LeaveModel->getLeavesAfterTodayByDepartmentID($dept_id);
-        $this->data['department_name'] = $this->DepartmentModel->getDepartmentNameByDepartmentID($dept_id);
-        $this->data['department_leave_person_count'] = $this->DepartmentModel->getLeavePersonsCountByDepartmentID($dept_id);
-        $this->data['department_leaves_count'] = $this->LeaveModel->getLeavesCountAfterTodayByDepartmentID($dept_id);
+        $deptId = $this->UserModel->getDepartmentIDByUserID($this->data['id']);
+
+        $additionalData = [
+            'title' => 'Leave Request Form',
+            'leavecredit' => $this->LeaveCreditModel->getLeaveCreditByUserID($this->data['id']),
+            'department_leaves' => $this->LeaveModel->getLeavesAfterTodayByDepartmentID($deptId),
+            'department_name' => $this->DepartmentModel->getDepartmentNameByDepartmentID($deptId),
+            'department_leave_person_count' => $this->DepartmentModel->getLeavePersonsCountByDepartmentID($deptId),
+            'department_leaves_count' => $this->LeaveModel->getLeavesCountAfterTodayByDepartmentID($deptId),
+        ];
+        $this->data = array_merge($this->data, $additionalData);
         return $this->renderEmployeePage('dashboard/employee/form/employee-leave-request-form', $this->data);
     }
     public function EmployeeAttedance() {

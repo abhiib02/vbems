@@ -109,12 +109,12 @@
 </script>
 <script>
     let month_data = [];
-    let HolidaysArr = <?= $HolidaysArr ?>;
+    let HolidaysArr = <?= json_encode($HolidaysArr) ?>;
     const totalEmp = <?= $TotalEmployees ?>;
     const currentYear = new Date().getFullYear();
     const daysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
-    const DATA_MONTHS = <?= $yearlyAttendance ?>;
+    const DATA_MONTHS = <?= json_encode($yearlyAttendance) ?>;
     DATA_MONTHS.forEach((month, index) => {
         month_data[month.MONTH - 1] = 
         ((month.SUM_OF_USERCOUNT / (getWorkingDays(currentYear, month.MONTH) - HolidaysArr[month.MONTH - 1])) / totalEmp)*100 ;
