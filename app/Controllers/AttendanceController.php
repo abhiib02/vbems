@@ -9,6 +9,7 @@ use App\Models\LeaveCredit;
 use App\Models\Holiday;
 use App\Models\Salary;
 use App\Models\Attendance;
+use App\Models\Option;
 use Config\Services;
 
 class AttendanceController extends BaseController {
@@ -18,8 +19,11 @@ class AttendanceController extends BaseController {
         $LeaveModel,
         $HolidayModel,
         $SalaryModel,
+        $OptionModel,
         $LeaveService;
+
     public $data = [];
+    private $flag = [];
     public $LEAVE_CREDIT_PER_ATTENDANCE;
     public $LEAVE_CREDIT_PER_MONTH = 1.5;
     public $HALFDAY_ENTRY_TIME = '11:00:00';
@@ -35,8 +39,9 @@ class AttendanceController extends BaseController {
         $this->HolidayModel = new Holiday();
         $this->LeaveCreditModel = new LeaveCredit();
         $this->SalaryModel = new Salary();
-
+        $this->OptionModel = new Option();
         $this->data['TotalEmployeeOnDate'] = $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d'));
+        $this->flag['EnableMarkAttendanceOnLogin'] = $this->OptionModel->getOptionValue('EnableMarkAttendanceOnLogin');
     }
 
     public function AttendanceByDate() {
@@ -92,6 +97,9 @@ class AttendanceController extends BaseController {
 
     public function AttendanceEntryProcessWhileLogin($USER_ID) {
 
+        if(!$this->flag['EnableMarkAttendanceOnLogin']){
+          return 0;  
+        }
         $date     = date('Y-m-d');
         $user_id  = $USER_ID;
         $isEntryExist = $this->AttendanceModel->isEntryExist($date, $user_id);

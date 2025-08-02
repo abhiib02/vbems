@@ -17,11 +17,8 @@
             </div>
         </div>
     </div>
-    <div class="card-body">
-        <div class=" p-2">
-
-            <p>Multiple Value Must be comma seperated</p>
-            <table class="table  table-striped">
+    <div class="card-body">            
+            <table class="table table-striped">
                 <thead>
                     <th>Option Name</th>
                     <th>Option Value</th>
