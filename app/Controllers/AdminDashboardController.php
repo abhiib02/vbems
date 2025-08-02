@@ -81,10 +81,10 @@ class AdminDashboardController extends BaseController {
 
         return $this->renderAdminPage('dashboard/admin/lists/admin-employeeList', $this->data);
     }
-    public function leaveRequestsList($status = "Pending") {
-        
+    public function leaveRequestsList($status = "pending") {
+        $status = strtolower($status);
         $validStatuses = ['pending', 'approved', 'rejected'];
-        if (!in_array(strtolower($status), $validStatuses)) {
+        if (!in_array($status, $validStatuses)) {
             return $this->RedirectWithtoast('Unknown Status', 'danger', 'leaveRequests.list');
         }
 
@@ -93,13 +93,13 @@ class AdminDashboardController extends BaseController {
 
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
 
-        if($status == "Pending" || $status == "pending") {
+        if($status == "pending") {
             $this->data['leaveRequests'] = $this->LeaveModel->getAllPendingLeaveRequest();
         }
-        if ($status == "Approved" || $status == "approved") {
+        if ($status == "approved") {
             $this->data['leaveRequests'] = $this->LeaveModel->getAllApprovedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
         }
-        if ($status == "Rejected" || $status == "rejected") {
+        if ($status == "rejected") {
             $this->data['leaveRequests'] = $this->LeaveModel->getAllRejectedLeaveRequestofMonthYear($this->data['month'], $this->data['year']);
         }
         return $this->renderAdminPage('dashboard/admin/lists/admin-leaveRequests', $this->data);
