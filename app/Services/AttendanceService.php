@@ -194,7 +194,16 @@ class AttendanceService {
         }
         return 0;
     }
+    public   function checkHalfDayOnPunchOut() {
+        // Check For half day on Punch out
+        $exitTime = new \DateTime(); // now
+        $cutoff = new \DateTime(date('Y-m-d') . ' ' . $this->HALFDAY_EXIT_TIME);
 
+        if ($exitTime < $cutoff) {
+            return 1;
+        }
+        return 0;
+    }
     public function subtractDayLeaveCredit($user_id, $month, $year) {
 
         $date = new \DateTime("$year-$month-01");
