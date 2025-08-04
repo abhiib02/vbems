@@ -34,7 +34,7 @@
                         <td><?= $employee->DESIGNATION ?></td>
                         <td><?= $employee->DEPARTMENT_NAME ?></td>
                         <td><?= $employee->BASIC_SALARY ?></td>
-                        <td><?= ($employee->DEACTIVATE) ? '<span class="badge text-bg-danger">Deactived</span>': '<span class="badge text-bg-success">Active</span>' ?></td>
+                        <td><?= ($employee->DEACTIVATE) ? '<span class="badge text-bg-danger">Deactived</span>' : '<span class="badge text-bg-success">Active</span>' ?></td>
                         <td class="">
 
 
@@ -80,65 +80,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <form action="/update-profile" method="POST">
-                                            <input type="hidden" name="id" value="<?= $employee->ID ?>">
-                                            <input type="hidden" name="isAdmin" value="1">
-                                            <div class="row">
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="Name" class="form-label">Name</label>
-                                                        <input type="text" class="form-control" value="<?= $employee->NAME ?>"
-                                                            name="name" id="Name" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="Email" class="form-label">Email</label>
-                                                        <input type="email" class="form-control" value="<?= $employee->EMAIL ?>"
-                                                            name="email" id="Email" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="Contact" class="form-label">Contact No</label>
-                                                        <input type="number" class="form-control" value="<?= $employee->CONTACT ?>"
-                                                            name="contact" id="Contact" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="Bio" class="form-label">Biometric ID</label>
-                                                        <input type="text" class="form-control" value="<?= $employee->BIOMETRIC_ID ?>"
-                                                            name="biometric" id="Bio" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="Designation" class="form-label">Designation</label>
-                                                        <input type="text" class="form-control" value="<?= $employee->DESIGNATION ?>"
-                                                            name="designation" id="Designation" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12 col-md-6 col-lg-6">
-                                                    <div class="mb-3">
-                                                        <label for="department" class="form-label">Employee Department</label>
-                                                        <select class="form-select" name="department" aria-label="Default select example"
-                                                            required>
-                                                            <option selected value="<?= $employee->DEPARTMENT_ID ?>">Current Department : <?= $employee->DEPARTMENT_NAME ?></option>
-                                                            <hr>
-                                                            <?php foreach ($departments as $department): ?>
-                                                                <option value="<?= $department->ID ?>"><?= $department->NAME ?></option>
-                                                            <?php endforeach; ?>
-                                                        </select>
-
-                                                    </div>
-                                                </div>
-
-
-                                            </div>
-
-                                            <button type="submit" class="btn btn-sm btn-success">Update Profile</button>
-                                        </form>
+                                        <?php include __DIR__ . '/../form/admin-update-employee-profile-form.php' ?>
                                     </div>
                                 </div>
                             </dialog>
@@ -155,15 +97,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <form action="/update-salary" method="POST">
-                                            <input type="hidden" name="id" value="<?= $employee->ID ?>">
-                                            <div class="mb-3">
-                                                <label for="salary" class="form-label">Salary</label>
-                                                <input type="number" class="form-control" value="<?= $employee->BASIC_SALARY ?>"
-                                                    name="salary" id="salary" required>
-                                            </div>
-                                            <button type="submit" class="btn btn-sm btn-success">Submit</button>
-                                        </form>
+                                        <?php include __DIR__ . '/../form/admin-update-employee-salary-form.php' ?>
                                     </div>
                                 </div>
                             </dialog>
@@ -179,31 +113,7 @@
                                         </div>
                                     </div>
                                     <div class="card-body">
-                                        <form action="/create-paid-leave" method="POST">
-                                            <input type="hidden" name="id" value="<?= $employee->ID ?>">
-                                            <input type="hidden" name="dept_id" value="<?= $employee->DEPARTMENT_ID ?>">
-                                            <div class="row">
-                                                <div class="col-sm-12">
-                                                    <div class="mb-3">
-                                                        <label for="datepicker" class="form-label">From - To Date</label>
-                                                        <input type="text" id="datepicker" class="form-control datepicker"
-                                                            id="from_to_date" name="from_to_date" required>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-12">
-                                                    <div class="mb-3">
-                                                        <label for="reason" class="form-label">Reason</label>
-                                                        <textarea class="form-control" name="reason" id="reason" required></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="type" class="form-label">Leave Type</label>
-                                                <input type="text" class="form-control" name="type" id="type" value="Paid Leave|PL"
-                                                    readonly disabled>
-                                            </div>
-                                            <button type="submit" class="btn btn-sm btn-success">Submit</button>
-                                        </form>
+                                        <?php include __DIR__ . '/../form/admin-create-paid-leave-form.php' ?>
                                     </div>
                                 </div>
 
@@ -217,8 +127,6 @@
                                     <input type="hidden" name="set" value="1">
                                 <?php endif; ?>
                             </form>
-
-
 
                         </td>
                     </tr>
