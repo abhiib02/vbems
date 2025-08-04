@@ -93,7 +93,7 @@ function runToast(message, status, duration) {
     let styleTag = document.createElement('style');
     styleTag.id = 'eztoast-styles';
     styleTag.innerHTML = CSS;
-    document.head.appendChild(styleTag);
+    document.body.appendChild(styleTag);
   }
   
   let toast = document.createElement('div');
@@ -106,7 +106,6 @@ function runToast(message, status, duration) {
   //   localStorage.setItem('toast-count', '0');
   // }
 
-  document.body.appendChild(styleTag);
   document.body.appendChild(toast);
 
      // Increamenting based on previous toast

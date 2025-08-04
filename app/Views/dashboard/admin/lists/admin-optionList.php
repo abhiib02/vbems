@@ -1,12 +1,16 @@
+<?php $enableAddOption = 0;?>
 <div class="card height-on-mobile">
     <div class="card-header">
         <div class="d-flex justify-content-between">
             <h5 class="fw-bold m-0">Options & Flags List</h5>
+            <?php if($enableAddOption):?>
             <div>
                 <button class="btn  btn-sm btn-success" type="button" data-bs-toggle="offcanvas"
                     data-bs-target="#offcanvasRight-option"><i class="ri-add-circle-fill"></i> Add Option</button>
             </div>
+            <?php endif;?>
         </div>
+        <?php if($enableAddOption):?>
         <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight-option">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title" id="offcanvasRightLabel">Add New Option</h5>
@@ -16,6 +20,7 @@
                 <?php include __DIR__ . '/../form/admin-add-option-form.php' ?>
             </div>
         </div>
+        <?php endif;?>
     </div>
     <div class="card-body">
         <table class="table table-striped">
