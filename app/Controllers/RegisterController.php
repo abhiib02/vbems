@@ -37,7 +37,7 @@ class RegisterController extends BaseController {
         }
     }
     
-    public function SignupValidation() {
+    /* public function SignupValidation() {
 
         $UserModel = new User();
         $LeaveCreditModel = new LeaveCredit();
@@ -73,10 +73,11 @@ class RegisterController extends BaseController {
                 ]
             ],
             'contact' => [
-                'rules' => 'required|min_length[10]|numeric',
+                'rules' => 'required|min_length[10]|max_length[10]|numeric',
                 'errors' => [
                     'required' => 'Contact is required.',
                     'min_length' => 'Contact must be atleast 10 characters long.',
+                    'max_length' => 'Contact can only be 10 characters long.',
                 ]
             ],
         ];
@@ -99,16 +100,15 @@ class RegisterController extends BaseController {
             return $this->RedirectWithtoast('Employee Already Exist', 'warning', '/login');
         }
         $queryData['PASSWORD'] = password_hash((string) $password, PASSWORD_DEFAULT);
-        $UserModel->insertUser($queryData);
 
-        $user_id = $UserModel->getUserID($queryData['EMAIL']);
+        $user_id = $UserModel->insertUser($queryData);
         $LeaveCreditData = [
             'USER_ID' => $user_id,
         ];
         $LeaveCreditModel->insertLeaveCredit($LeaveCreditData);
 
         return $this->RedirectWithtoast('Employee Registered', 'success', '/login');
-    }
+    } */
     
     public function SignupValidation_admin() {
 
@@ -174,14 +174,7 @@ class RegisterController extends BaseController {
             return $this->RedirectWithtoast('Email Already Exist', 'warning', 'auth.login');
         }
         $queryData['PASSWORD'] = password_hash((string) $password, PASSWORD_DEFAULT);
-        $UserModel->insertUser($queryData);
-
-        $user_id = $UserModel->getUserID($queryData['EMAIL']);
-        $LeaveCreditData = [
-            'USER_ID' => $user_id,
-        ];
-        $LeaveCreditModel->insertLeaveCredit($LeaveCreditData);
-
+        $user_id = $UserModel->insertUser($queryData);
         return $this->RedirectWithtoast('Admin Registered', 'success', 'auth.login');
     }
 
@@ -199,6 +192,7 @@ class RegisterController extends BaseController {
             "BIOMETRIC_ID" => $this->request->getPost('biometric'),
 
         ];
+        $table = $UserModel->table;
         // check input valid or not
         $rules = [
             'name' => [
@@ -209,7 +203,7 @@ class RegisterController extends BaseController {
                 ]
             ],
             'email' => [
-                'rules' => 'required|valid_email|is_unique[users_table.EMAIL]',
+                'rules' => "required|valid_email|is_unique[$table.EMAIL]",
                 'errors' => [
                     'required' => 'Email is required.',
                     'valid_email' => 'Enter a valid email address.',
@@ -217,7 +211,7 @@ class RegisterController extends BaseController {
                 ]
             ],
             'contact' => [
-                'rules' => 'required|numeric|min_length[10]|is_unique[users_table.CONTACT]',
+                'rules' => "required|numeric|min_length[10]|is_unique[$table.CONTACT]",
                 'errors' => [
                     'required' => 'Contact number is required.',
                     'min_length' => 'Contact must be at least 10 digits.',
@@ -238,7 +232,7 @@ class RegisterController extends BaseController {
                 ]
             ],
             'biometric' => [
-                'rules' => 'required|alpha_numeric|is_unique[users_table.BIOMETRIC_ID]',
+                'rules' => "required|alpha_numeric|is_unique[$table.BIOMETRIC_ID]",
                 'errors' => [
                     'required' => 'Biometric ID is required.',
                     'alpha_numeric' => 'Biometric ID must be alphanumeric.',
@@ -255,7 +249,7 @@ class RegisterController extends BaseController {
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'employee.list');
         }
-
+        
         // check user exist
 
         $userExist = $UserModel->isUserExist($queryData['EMAIL']);
@@ -264,9 +258,7 @@ class RegisterController extends BaseController {
             return $this->RedirectWithtoast('Employee Already Exist', 'warning', 'employee.list');
         }
 
-        $UserModel->insertUser($queryData);
-
-        $user_id = $UserModel->getUserID($queryData['EMAIL']);
+        $user_id = $UserModel->insertUser($queryData);
 
         $LeaveCreditData = [
             'USER_ID' => $user_id,

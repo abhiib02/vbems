@@ -20,7 +20,6 @@ $routes->get('/', 'LoginController::index');
 /*------------------- Auth Routes ------------------*/
 $routes->group('', function ($routes) {
     $routes->get('signup', 'RegisterController::index', ['as' => 'auth.signup']);
-    $routes->post('signupvalidation', 'RegisterController::SignupValidation');
     $routes->post('signupvalidation-admin', 'RegisterController::SignupValidation_admin');
 
     $routes->get('login', 'LoginController::index', ['as' => 'auth.login']);

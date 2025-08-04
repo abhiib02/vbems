@@ -6,15 +6,16 @@ use CodeIgniter\Model;
 use App\Models\Salary;
 
 class User extends Model {
-    protected $table = 'users_table';
+    public $table = 'users_table';
     protected $primaryKey = 'ID';
-    protected $allowedFields = ['NAME', 'BIOMETRIC_ID', 'EMAIL', 'ROLE', 'DESIGNATION', 'DEPARTMENT_ID', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
+    protected $allowedFields = ['NAME', 'BIOMETRIC_ID', 'EMAIL', 'CONTACT', 'ROLE', 'DESIGNATION', 'DEPARTMENT_ID', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
     protected $salaryModel;
 
     public function insertUser($data) {
-        return $this->insert($data);
+        $this->insert($data);
+        return $this->insertID();
     }
     public function updateUser($id, $data){
         return $this->update($id, $data);
