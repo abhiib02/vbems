@@ -1,7 +1,6 @@
 function runToast(message, status, duration) {
   
-  let styleTag = document.createElement('style');
-  styleTag.innerHTML = `
+  const CSS = `
   .eztoast {
     padding: 10px;
     min-width:100px;
@@ -90,8 +89,17 @@ function runToast(message, status, duration) {
     }
   }
   `;
+  if (!document.getElementById('eztoast-styles')) {
+    let styleTag = document.createElement('style');
+    styleTag.id = 'eztoast-styles';
+    styleTag.innerHTML = CSS;
+    document.head.appendChild(styleTag);
+  }
+  
   let toast = document.createElement('div');
   toast.classList.add('eztoast');
+  toast.setAttribute('role', 'status');
+  toast.setAttribute('aria-live', 'polite');
 
     // checking any toast is on screen already
   // if (localStorage.getItem('toast-count') == null) {
@@ -116,7 +124,8 @@ function runToast(message, status, duration) {
     toast.style.setProperty('--status', statusObject[status.toLowerCase()])
   }
   if (duration) {
-    toast.style.setProperty('--duration', duration)
+    const finalDuration = typeof duration === 'number' ? `${duration}ms` : duration;
+    toast.style.setProperty('--duration', finalDuration);
   }
   // toast.style.setProperty('--index', toast.dataset.count)
   toast.innerHTML = `<p>${message}</p>`;

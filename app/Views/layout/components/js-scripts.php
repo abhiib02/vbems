@@ -2,17 +2,14 @@
     (function setTheme() {
         let currentTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-bs-theme', currentTheme);
-
+        let newTheme = currentTheme === 'light' ? 'dark' : 'light';
         const btn1 = document.getElementById('themeChangerBtn');
         const btn2 = document.getElementById('themeChangerBtn-2');
 
-        if (btn1) {
-            btn1.innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
-        }
+        const iconHTML = newTheme === 'light' ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
 
-        if (btn2) {
-            btn2.innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
-        }
+        if (btn1) btn1.innerHTML = iconHTML;
+        if (btn2) btn2.innerHTML = iconHTML;
     })();
 
     function changeTheme() {
@@ -30,13 +27,11 @@
 </script>
 <script>
     let links = document.querySelectorAll('.dashboard-link');
-    let current_url = window.location.href;
-    let current_arr = current_url.split("/");
+    const currentPath = new URL(window.location.href).pathname;
 
-    links.forEach((link) => {
-        if (!link.href) return;
-        let link_arr = link.href.split("/");
-        if (current_arr[3] && link_arr[3] && current_arr[3] === link_arr[3]) {
+    links.forEach(link => {
+        const linkPath = new URL(link.href).pathname;
+        if (linkPath === currentPath) {
             link.classList.add('active');
         }
     });
@@ -49,7 +44,7 @@
 <script src="/js/ezToast.js?v=1.2"></script>
 <script>
     function openDialogModal(id) {
-        let dialog = document.getElementById(id);
+        let dialog = document.getElementByID(id);
         dialog.showModal();
     }
 
@@ -60,9 +55,11 @@
     }
 
     function toastonFormSubmit(ID, message, status, time) {
-        document.getElementByID(ID).addEventListener('submit', () => {
+        const form = document.getElementById(ID);
+        if (!form) return;
+        form.addEventListener('submit', () => {
             runToast(message, status, time);
-        })
+        });
     }
 
     function toastonLinkClick(message, status, time) {
@@ -72,9 +69,6 @@
     function confirmBeforeAction(url, message) {
         if (confirm(message)) {
             window.location.href = url;
-        } else {
-            return 0;
         }
-
     }
 </script>

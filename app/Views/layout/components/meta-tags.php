@@ -8,7 +8,7 @@ $DefaultDesc = 'VoyagersBeat EMS';
 ?>
 
 <!-- HTML Meta Tags -->
-<title><?= (isset($title) && $title != "") ? $title : $DefaultTitle ?></title>
+<title><?= htmlspecialchars($title ?? $DefaultTitle) ?></title>
 <meta name="description" content="<?= (isset($description) && $description != "") ? $description : $DefaultDesc ?>">
 
 <!-- Facebook Meta Tags -->
