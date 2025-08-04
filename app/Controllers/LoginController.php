@@ -2,7 +2,6 @@
 
 namespace App\Controllers;
 
-use App\Controllers\AttendanceController;
 use Config\Services;
 use App\Models\User;
 
@@ -10,11 +9,19 @@ class LoginController extends BaseController {
     protected $helpers = ['form'];
     public $session;
     public $UserModel;
+    private $AttendanceService;
     public function __construct() {
         $this->session = Services::session();
         $this->UserModel = new User();
+        $this->AttendanceService = Services::attendanceService();
     }
 
+    private function renderLoginPage($data) {
+        return
+            view('layout/header', $data) .
+            view('dashboard/login', $data) .
+            view('layout/footer', $data);
+    }
     public function index() {
         $data['noindex'] = 1;
 
@@ -23,13 +30,12 @@ class LoginController extends BaseController {
         } elseif ($this->AuthCheck()) {
             return redirect()->to('account');
         } else {
-            return view('layout/header', $data) . view('dashboard/login') . view('layout/footer');
+            return $this->renderLoginPage($data);
         }
     }
 
     public function loginValidation() {
 
-        $AttendanceController = new AttendanceController();
         $queryData = [
             "EMAIL" => $this->request->getPost('email'),
             "PASSWORD" => $this->request->getPost('password'),
@@ -84,14 +90,14 @@ class LoginController extends BaseController {
 
         if (!$isAdmin) {
             $ID = $this->UserModel->getUserIDByEmail($email);
-            $AttendanceController->attendanceEntryProcessWhileLogin($ID);
+            $this->AttendanceService->markEntryOnLogin($ID);
         }
         $isAdmin = $isAdmin ? true : false;
         $LoggedInData = [
             'id' => $this->UserModel->getUserID($email),
             'name' => $this->UserModel->getUserName($queryData['EMAIL']),
             'email' => $queryData['EMAIL'],
-            'logged_in' => true,  
+            'logged_in' => true,
             'role' => $isAdmin,
         ];
 
