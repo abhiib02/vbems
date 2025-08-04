@@ -1,26 +1,24 @@
-<?php $enableAddOption = 0;?>
+<?php $enableAddOption = filter_var($_GET['addOption'] ?? 0, FILTER_VALIDATE_INT) ?>
 <div class="card height-on-mobile">
     <div class="card-header">
         <div class="d-flex justify-content-between">
             <h5 class="fw-bold m-0">Options & Flags List</h5>
-            <?php if($enableAddOption):?>
-            <div>
-                <button class="btn  btn-sm btn-success" type="button" data-bs-toggle="offcanvas"
-                    data-bs-target="#offcanvasRight-option"><i class="ri-add-circle-fill"></i> Add Option</button>
-            </div>
-            <?php endif;?>
+            <?php if ($enableAddOption): ?>
+                <div>
+                    <button class="btn  btn-sm btn-success" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasRight-option"><i class="ri-add-circle-fill"></i> Add Option</button>
+                </div>
+                <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight-option">
+                    <div class="offcanvas-header">
+                        <h5 class="offcanvas-title" id="offcanvasRightLabel">Add New Option</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <?php include __DIR__ . '/../form/admin-add-option-form.php' ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
-        <?php if($enableAddOption):?>
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight-option">
-            <div class="offcanvas-header">
-                <h5 class="offcanvas-title" id="offcanvasRightLabel">Add New Option</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-            </div>
-            <div class="offcanvas-body">
-                <?php include __DIR__ . '/../form/admin-add-option-form.php' ?>
-            </div>
-        </div>
-        <?php endif;?>
     </div>
     <div class="card-body">
         <table class="table table-striped">
@@ -37,7 +35,7 @@
                                 <input type="text" name="<?= $option->NAME ?>" value="<?= $option->VALUE ?>" onchange="this.form.submit()" class="form-control" required>
                             <?php else: ?>
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" role="switch" name="<?= $option->NAME ?>" onchange="this.form.submit()" id="switchCheckChecked<?= $index?>" <?= ($option->VALUE == 1) ? 'checked':''?>>
+                                    <input class="form-check-input" type="checkbox" role="switch" name="<?= $option->NAME ?>" onchange="this.form.submit()" id="switchCheckChecked<?= $index ?>" <?= ($option->VALUE == 1) ? 'checked' : '' ?>>
                                 </div>
                             <?php endif; ?>
                         </form>
