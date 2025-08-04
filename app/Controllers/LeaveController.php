@@ -30,12 +30,48 @@ class LeaveController extends BaseController {
         $user_id = $this->request->getPost('user_id');
         $Leavetype = $this->request->getPost('type');
         $LeaveReason = $this->request->getPost('reason');
+        $from_to_date_arr = explode('/', $this->request->getPost('from_to_date'));
+
+        $rules = [
+            'user_id' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'User ID is required.',
+                ]
+            ],
+            'type' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Leave Type is required.',
+                ]
+            ],
+            'from_to_date' => [
+                'rules' => 'required|regex_match[/\d{4}-\d{2}-\d{2}\/\d{4}-\d{2}-\d{2}/]',
+                'errors' => [
+                    'required' => 'Date is required.',
+                    'regex_match' => 'Date range format is invalid.'
+                ]
+            ],
+            'reason' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Reason is required.',
+                ]
+            ],
+        ];
+
+        if (!$this->validate($rules)) {
+            $response =  [
+                'status' => false,
+                'message' => $this->validator->getErrors()
+            ];
+            $firstError = reset($response['message']);
+            return $this->RedirectWithtoast($firstError, 'warning', '/my-leaves');
+        }
+
+        $days = $this->daysCountBetweenDates($from_to_date_arr[0], $from_to_date_arr[1]);
         $Department_id = $this->userModel->getDepartmentIDByUserID($user_id);
         $deptLeaveCountPerson = $this->DepartmentModel->getLeavePersonsCountByDepartmentID($Department_id);
-
-        $from_to_date_arr = explode('/', $this->request->getPost('from_to_date'));
-        $days = $this->daysCountBetweenDates($from_to_date_arr[0], $from_to_date_arr[1]);
-
         
 
         $from = new \DateTime($from_to_date_arr[0]);
@@ -98,35 +134,7 @@ class LeaveController extends BaseController {
             "STATUS" => 'Pending',
         ];
 
-        $rules = [
-            'user_id' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'User ID is required.',
-                ]
-            ],
-            'type' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Leave Type is required.',
-                ]
-            ],
-            'reason' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Reason is required.',
-                ]
-            ],
-        ];
-
-        if (!$this->validate($rules)) {
-            $response =  [
-                'status' => false,
-                'message' => $this->validator->getErrors()
-            ];
-            $firstError = reset($response['message']);
-            return $this->RedirectWithtoast($firstError, 'warning', '/my-leaves');
-        }
+        
 
         $this->leaveModel->insertLeave($LeaveRequestData);
         $this->EmailController->employee_leave_mail($LeaveRequestDataEmail);
@@ -152,9 +160,10 @@ class LeaveController extends BaseController {
                 ]
             ],
             'from_to_date' => [
-                'rules' => 'required',
+                'rules' => 'required|regex_match[/\d{4}-\d{2}-\d{2}\/\d{4}-\d{2}-\d{2}/]',
                 'errors' => [
                     'required' => 'Date is required.',
+                    'regex_match' => 'Date range format is invalid.'
                 ]
             ],
             'reason' => [
@@ -214,7 +223,7 @@ class LeaveController extends BaseController {
         if ($LeaveType != 'PL') {
             $leavecredit = (($leavecredit - $LeaveRequestData->DAYS) < 0) ? 0 : ($leavecredit - $LeaveRequestData->DAYS);
         }
-
+        
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leavecredit);
         $this->EmailController->leaveRequestProcessed_mail($LeaveRequestData, 1);
         return $this->RedirectWithtoast('Leave Request Approved', 'Success', 'leaveRequests.list');
