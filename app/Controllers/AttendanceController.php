@@ -29,7 +29,7 @@ class AttendanceController extends BaseController {
     public function __construct() {
         $this->session = Services::session();
         $this->LeaveService = Services::leaveService();
-        $this->AttendanceService = Services::attendanceLogicService();
+        $this->AttendanceService = Services::attendanceService();
         $this->UserModel = new User();
         $this->AttendanceModel = new Attendance();
         $this->LeaveModel = new Leave();
