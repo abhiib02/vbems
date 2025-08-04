@@ -15,7 +15,7 @@ class OptionsController extends BaseController
         
     public function addOptionProcess(){
         $optionData = [
-            'NAME' => $this->request->getPost("option_name"),
+            'NAME' => trim($this->request->getPost("option_name")),
             'TYPE' => (int)$this->request->getPost("option_type"),
             'VALUE' => $this->request->getPost("option_value"),
         ];
@@ -28,11 +28,10 @@ class OptionsController extends BaseController
                 ]
                 ],
             'option_type' => [
-                'rules' => 'required|min_length[1]|max_length[1]|numeric',
+                'rules' => 'required|in_list[0,1]|numeric',
                 'errors' => [
                     'required' => 'Option Type is required.',
-                    'min_length' => 'Option Type 1 digit is required.',
-                    'max_length' => 'Option Type only 1 digit is allowed.',
+                    'in_list' => 'Option Type Not Supported',
                     'numeric' => 'Option Type is Must Be Numeric Either 0 or 1.',
                 ]
             ],
@@ -59,9 +58,8 @@ class OptionsController extends BaseController
 
     public function save($name)
     {
-        $value = ($this->request->getPost($name) === 'on') ? 1 : $this->request->getPost($name);
-        $Option = new Option();
-        $Option->saveOption($name, $value);
+        $value = ($this->request->getPost($name) === 'on') ? 1 : ($this->request->getPost($name) ?? 0);
+        $this->OptionModel->saveOption($name, $value);
         return $this->RedirectWithtoast($name .' Option Saved', 'Success', 'options.list');
         
     }
