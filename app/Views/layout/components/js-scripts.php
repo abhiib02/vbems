@@ -2,8 +2,17 @@
     (function setTheme() {
         let currentTheme = localStorage.getItem('theme') || 'light';
         document.documentElement.setAttribute('data-bs-theme', currentTheme);
-        document.getElementById('themeChangerBtn').innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
-        document.getElementById('themeChangerBtn-2').innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
+
+        const btn1 = document.getElementById('themeChangerBtn');
+        const btn2 = document.getElementById('themeChangerBtn-2');
+
+        if (btn1) {
+            btn1.innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
+        }
+
+        if (btn2) {
+            btn2.innerHTML = (currentTheme === 'light') ? '<i class="ri-moon-fill"></i>' : '<i class="ri-sun-fill"></i>';
+        }
     })();
 
     function changeTheme() {

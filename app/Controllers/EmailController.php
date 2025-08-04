@@ -174,6 +174,7 @@ class EmailController extends BaseController {
                                                                         <a href="" class style="font-size:14px;font-family:Roboto,Tahoma,Verdana,Segoe,sans-serif;mso-line-height-alt:16.8px;color:#000;line-height:1.2">
                                                                             <p style="margin:0;font-size:14px;text-align:center;mso-line-height-alt:16.8px">
                                                                                 <span style="font-size:16px;">Simply click on the button to set a new password!</span>
+                                                                                <span style="font-size:16px;">This link is valid for only 5 minutes. Please complete the process before it expires.</span>
                                                                             </p>
                                                                         </a>
                                                                     </div>

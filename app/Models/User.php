@@ -8,7 +8,7 @@ use App\Models\Salary;
 class User extends Model {
     public $table = 'users_table';
     protected $primaryKey = 'ID';
-    protected $allowedFields = ['NAME', 'BIOMETRIC_ID', 'EMAIL', 'CONTACT', 'ROLE', 'DESIGNATION', 'DEPARTMENT_ID', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
+    protected $allowedFields = ['NAME', 'BIOMETRIC_ID', 'EMAIL', 'CONTACT', 'ROLE', 'DESIGNATION', 'DEPARTMENT_ID', 'PASSWORD', 'PASSWORD_RESET_TOKEN', 'DEACTIVATE', 'CREATED_ON', 'UPDATED_AT'];
     protected $createdField = 'CREATED_ON';
     protected $updatedField = 'UPDATED_AT';
     protected $salaryModel;
@@ -46,6 +46,13 @@ class User extends Model {
             return null;
         }
         return (new \DateTime($user['CREATED_ON']))->format('Y-m-d');
+    }
+    public function getUserUpdatedAtforToken($TOKEN) {
+        $user = $this->select('UPDATED_AT')->asArray()->where('PASSWORD_RESET_TOKEN',$TOKEN)->first();
+        if (!$user || empty($user['UPDATED_AT'])) {
+            return null;
+        }
+        return (new \DateTime($user['UPDATED_AT']))->format('Y-m-d h:i:s');
     }
     public function getUserEmailByID($ID) {
         $user = $this->select('EMAIL')->asArray()->find($ID);
@@ -142,7 +149,7 @@ class User extends Model {
         $hashedPass = password_hash($password, PASSWORD_DEFAULT);
         return $this->update($id, ['PASSWORD' => $hashedPass]);
     }
-    public function resetpassword($token, $newhash) {
+    public function resetpasswordByToken($token, $newhash) {
 
         $updated = $this->where('PASSWORD_RESET_TOKEN', $token)
             ->set('PASSWORD', $newhash)

@@ -12,7 +12,7 @@ class UserController extends BaseController {
     public $UserModel;
     protected $EmailController;
     public $data = [];
-
+    public $TOKEN_EXPIRATION_MINUTES = 5;
     public function __construct() {
         $this->session = Services::session();
         $this->UserModel = new User();
@@ -33,8 +33,9 @@ class UserController extends BaseController {
         return $this->render_page('dashboard/forgot-password', $this->data);
     }
 
-    public function generateHashToken($email) {
-        $hashToken =  hash('sha256', $email . date('his'));
+    public function generateHashToken() {
+        //$hashToken =  hash('sha256', $email . date('his'));
+        $hashToken = bin2hex(random_bytes(32));
         return $hashToken;
     }
 
@@ -43,28 +44,36 @@ class UserController extends BaseController {
         $email = $this->request->getPost("email");
         $userExist = $this->UserModel->isUserExist($email);
         if (!$userExist) {
-            return $this->RedirectWithtoast('User Does not Exist', 'danger', 'user.forgot.password.form');
+            //return $this->RedirectWithtoast('User Does not Exist', 'danger', 'user.forgot.password.form');
+            //This avoids user enumeration attacks.
+            return $this->RedirectWithtoast('Reset Password Link Sent (if user exists)', 'info', 'auth.login');
         }
-        $generatedToken = $this->generateHashToken($email);
+        $generatedToken = $this->generateHashToken();
         $this->UserModel->insertPasswordResetTokenToEmail($email, $generatedToken);
         $this->EmailController->reset_password_mail($email, $generatedToken);
-        return $this->RedirectWithtoast('Reset Password Link Sent to Mail', 'Success', 'auth.login');
+        return $this->RedirectWithtoast('Reset Password Link Sent to Mail  (if user exists)', 'info', 'auth.login');
     }
 
     public function resetform() {
         $this->data['noindex'] = 1;
-        $UserModel = new User();
+        
         $token = $this->request->getVar('token');
-        $tokenExist = $UserModel->isTokenExist($token);
+        $tokenExist = $this->UserModel->isTokenExist($token);
+        $minutesPassed = $this->tokenExpirationCheck($this->UserModel->getUserUpdatedAtforToken($token));
+        
         if (!$tokenExist) {
             return $this->RedirectWithtoast('Invalid Link', 'danger', 'auth.login');
         }
+        if ($minutesPassed > $this->TOKEN_EXPIRATION_MINUTES) {
+            return $this->RedirectWithtoast('Token Expired', 'danger', 'user.forgot.password.form');
+        }
         $this->data["token"] = $token;
         return $this->render_page('dashboard/reset-password', $this->data);
+        
     }
 
     public function reset() {
-        $UserModel = new User();
+        
         $password = $this->request->getPost("password");
         $token = $this->request->getPost("token");
         $rules = $this->validate([
@@ -74,7 +83,7 @@ class UserController extends BaseController {
             return $this->RedirectWithtoast('Password Must be 8 Characters long', 'Danger', '/resetform?token=' . $token);
         }
         $newhash = password_hash((string) $password, PASSWORD_DEFAULT);
-        $UserModel->resetpassword($token, $newhash);
+        $this->UserModel->resetpasswordByToken($token, $newhash);
         return $this->RedirectWithtoast('Password Reset Successfully', 'success', 'auth.login');
     }
 
@@ -163,7 +172,13 @@ class UserController extends BaseController {
 
         return $this->RedirectWithtoast('Profile Updated', 'info', 'employee.list');
     }
-
+    private function tokenExpirationCheck($datetime){
+        $end = new \DateTime($datetime);
+        $start   = new \DateTime(date('Y-m-d h:i:s'));
+        $interval = $start->diff($end);
+        $minutesPassed = ($interval->days * 24 * 60) + ($interval->h * 60) + $interval->i + ($interval->s / 60);;
+        return (int)$minutesPassed;
+    }
     //////////////////////////////////
     //////////////////////////////
     /////////////////////////////
