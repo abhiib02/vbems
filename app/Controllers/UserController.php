@@ -56,11 +56,11 @@ class UserController extends BaseController {
 
     public function resetform() {
         $this->data['noindex'] = 1;
-        
+
         $token = $this->request->getVar('token');
         $tokenExist = $this->UserModel->isTokenExist($token);
         $minutesPassed = $this->tokenExpirationCheck($this->UserModel->getUserUpdatedAtforToken($token));
-        
+
         if (!$tokenExist) {
             return $this->RedirectWithtoast('Invalid Link', 'danger', 'auth.login');
         }
@@ -69,11 +69,10 @@ class UserController extends BaseController {
         }
         $this->data["token"] = $token;
         return $this->render_page('dashboard/reset-password', $this->data);
-        
     }
 
     public function reset() {
-        
+
         $password = $this->request->getPost("password");
         $token = $this->request->getPost("token");
         $rules = $this->validate([
@@ -172,7 +171,7 @@ class UserController extends BaseController {
 
         return $this->RedirectWithtoast('Profile Updated', 'info', 'employee.list');
     }
-    private function tokenExpirationCheck($datetime){
+    private function tokenExpirationCheck($datetime) {
         $end = new \DateTime($datetime);
         $start   = new \DateTime(date('Y-m-d h:i:s'));
         $interval = $start->diff($end);

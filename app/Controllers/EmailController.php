@@ -41,7 +41,7 @@ class EmailController extends BaseController {
         $email->setSubject($subject);
         $email->setMessage($message);
         if ($email->send()) {
-            return $this->RedirectWithtoast('Reset Password Link Sent to Mail', 'Success', 'auth.login');            
+            return $this->RedirectWithtoast('Reset Password Link Sent to Mail', 'Success', 'auth.login');
         } else {
             //$data = $email->printDebugger(['headers']);
             //print_r($data);

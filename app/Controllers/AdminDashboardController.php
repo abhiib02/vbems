@@ -58,14 +58,14 @@ class AdminDashboardController extends BaseController {
             $sundays = $this->getTotalSundaysInMonth($i, $this->data['year']);
             $HolidaysArr[] = $holidayMap[$i] + $sundays;
         }
-        
-        $data =[
-            'todayattendance'=> $this->AttendanceModel->getTodayattendance(),
+
+        $data = [
+            'todayattendance' => $this->AttendanceModel->getTodayattendance(),
             'TotalEmployees' => $this->UserModel->getAllEmployeesCount(),
             'nextHoliday' => $this->HolidayModel->getNextHoliday(),
             'TotalDepartments' => $this->DepartmentModel->getAllDepartmentsCount(),
             'yearlyAttendance' => $this->AttendanceModel->getSumofTotalUserCountofmonthyear($this->data['year']),
-            'HolidaysArr'=> $HolidaysArr,
+            'HolidaysArr' => $HolidaysArr,
         ];
 
         $this->data = array_merge($this->data, $data);
@@ -114,7 +114,7 @@ class AdminDashboardController extends BaseController {
         return $this->renderAdminPage('dashboard/admin/lists/admin-leaveRequests', $this->data);
     }
     public function attendance() {
-        
+
         [$this->data['month'], $this->data['year']] = $this->getRequestMonthYear();
 
         $additionalData = [
@@ -124,17 +124,17 @@ class AdminDashboardController extends BaseController {
             'AttendanceStrength' => $this->AttendanceModel->getEachDayattendanceDataofMonth($this->data['month'], $this->data['year']),
             'today_strength' => $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d')),
         ];
-        
+
         $this->data = array_merge($this->data, $additionalData);
 
         return $this->renderAdminPage('dashboard/admin/attendance/admin-attendance', $this->data);
     }
     public function employeeattendance($id) {
 
-        if(!($this->UserModel->isUserExistByID($id))){
+        if (!($this->UserModel->isUserExistByID($id))) {
             return $this->RedirectWithtoast('Employee ID Doesnt Exist', 'danger', 'employee.list');
         }
-        
+
         $userData = $this->UserModel->getUserByID($id);
         $additionalData = [
             'title' => $userData->NAME . ' Attendance',
@@ -190,7 +190,7 @@ class AdminDashboardController extends BaseController {
             'zeroleavecredit' => $this->LeaveModel->getApprovedZeroLeaveCreditDaysCountofMonthByID($id, $month, $year),
             'paid_leaves'    => $this->LeaveModel->getPaidLeaveDayCountofMonthYearByUserID($id, $month, $year),
             'unpaid_leaves' => $this->LeaveModel->getLeaveDayCountofMonthYearByUserID($id, $month, $year),
-            'leaveCredit' =>$this->LeaveCreditModel->getLeaveCreditByUserID($id)
+            'leaveCredit' => $this->LeaveCreditModel->getLeaveCreditByUserID($id)
         ];
 
         // Holidays
@@ -208,9 +208,9 @@ class AdminDashboardController extends BaseController {
         ];
         return [
             'id'          => $id,
-            'employeename'=> $employeename,
+            'employeename' => $employeename,
             'month'     => $month,
-            'year'      => $year,            
+            'year'      => $year,
             ...$attendanceData,
             ...$leaveData,
             ...$holidayData,
@@ -256,7 +256,7 @@ class AdminDashboardController extends BaseController {
     protected function getRequestMonthYear() {
         $month = $this->request->getGet('month') ?? date('m');
         $year = $this->request->getGet('year') ?? date('Y');
-        
+
         // Validate month (1-12)
         if (!is_numeric($month) || $month < 1 || $month > 12) {
             $month = date('m');

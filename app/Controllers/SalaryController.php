@@ -38,7 +38,7 @@ class SalaryController extends BaseController {
         $this->SalaryModel->insertSalary($salaryData);
         return $this->RedirectWithtoast('Employee Salary Updated', 'info', 'employee.list');
     }
-    
+
     public function updateSalaryProcess() {
 
         $id = $this->request->getPost("id");
@@ -65,20 +65,20 @@ class SalaryController extends BaseController {
 
     private function salaryValidationRules(): array {
         return [
-                'id' => [
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => 'ID is required.',
-                    ]
-                ],
-                'salary' => [
-                    'rules' => 'required|numeric|greater_than_equal_to[0]',
-                    'errors' => [
-                        'required' => 'Salary is required.',
-                        'numeric' => 'Salary must be a number.',
-                        'greater_than_equal_to' => 'Salary must be non-negative.',
-                    ]
+            'id' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'ID is required.',
                 ]
-            ];
+            ],
+            'salary' => [
+                'rules' => 'required|numeric|greater_than_equal_to[0]',
+                'errors' => [
+                    'required' => 'Salary is required.',
+                    'numeric' => 'Salary must be a number.',
+                    'greater_than_equal_to' => 'Salary must be non-negative.',
+                ]
+            ]
+        ];
     }
 }

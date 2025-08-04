@@ -32,11 +32,10 @@ class RegisterController extends BaseController {
                 return redirect()->to('/login');
             } else {
                 return $this->render_page('dashboard/admin/admin-signup', $this->data);
-            
             }
         }
     }
-    
+
     /* public function SignupValidation() {
 
         $UserModel = new User();
@@ -109,7 +108,7 @@ class RegisterController extends BaseController {
 
         return $this->RedirectWithtoast('Employee Registered', 'success', '/login');
     } */
-    
+
     public function SignupValidation_admin() {
 
         $UserModel = new User();
@@ -199,7 +198,7 @@ class RegisterController extends BaseController {
                 'rules' => 'required|regex_match[/^[A-Za-z\s]*$/]',
                 'errors' => [
                     'required' => 'Name is required.',
-                    'regex_match'=> 'Name must only be Alpabetic'
+                    'regex_match' => 'Name must only be Alpabetic'
                 ]
             ],
             'email' => [
@@ -249,7 +248,7 @@ class RegisterController extends BaseController {
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'employee.list');
         }
-        
+
         // check user exist
 
         $userExist = $UserModel->isUserExist($queryData['EMAIL']);

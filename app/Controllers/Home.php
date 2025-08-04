@@ -2,25 +2,19 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController
-{
-    public $data=[];
-    
-    public function index()
-    {
+class Home extends BaseController {
+    public $data = [];
+
+    public function index() {
         if ($this->AuthCheckAdmin()) {
             return redirect()->to('dashboard');
-        }
-        elseif ($this->AuthCheck()) {
+        } elseif ($this->AuthCheck()) {
             return redirect()->to('account');
-        }
-        else{
+        } else {
             return
-                view('layout/header', $this->data).
-                view('dashboard/login', $this->data).
+                view('layout/header', $this->data) .
+                view('dashboard/login', $this->data) .
                 view('layout/footer', $this->data);
         }
-        
-        
     }
 }

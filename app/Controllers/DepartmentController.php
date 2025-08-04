@@ -7,21 +7,19 @@ use App\Models\Department;
 use App\Models\User;
 use Config\Services;
 
-class DepartmentController extends BaseController
-{   
-    public $DepartmentModel,$UserModel;
+class DepartmentController extends BaseController {
+    public $DepartmentModel, $UserModel;
     public $data = [];
-    public function __construct(){
+    public function __construct() {
         $this->session = Services::session();
         $this->DepartmentModel = new Department();
         $this->UserModel = new User();
-
     }
-    public function AddDepartmentProcess(){
+    public function AddDepartmentProcess() {
 
         $departmentData = [
-            'NAME'=>$this->request->getPost("department_name"),
-            'LEAVE_PERSON_COUNT'=>$this->request->getPost("leave_person_count"),
+            'NAME' => $this->request->getPost("department_name"),
+            'LEAVE_PERSON_COUNT' => $this->request->getPost("leave_person_count"),
         ];
 
         // check input valid or not
@@ -49,13 +47,11 @@ class DepartmentController extends BaseController
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'departments.list');
         }
-        
+
         $this->DepartmentModel->insertDepartment($departmentData);
         return $this->RedirectWithtoast('Department Added', 'info', 'departments.list');
-        
-
     }
-    public function updateDepartmentProcess(){
+    public function updateDepartmentProcess() {
 
         $id = $this->request->getPost("id");
         if (!($this->DepartmentModel->isDepartmentExistID($id))) {
@@ -63,8 +59,8 @@ class DepartmentController extends BaseController
         }
 
         $departmentData = [
-            'NAME'=>$this->request->getPost("department_name"),
-            'LEAVE_PERSON_COUNT'=>$this->request->getPost("leave_person_count"),
+            'NAME' => $this->request->getPost("department_name"),
+            'LEAVE_PERSON_COUNT' => $this->request->getPost("leave_person_count"),
         ];
         // check input valid or not
         $rules = [
@@ -92,14 +88,11 @@ class DepartmentController extends BaseController
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'departments.list');
         }
-        
-        $this->DepartmentModel->updateDepartment($id,$departmentData);
-        return $this->RedirectWithtoast('Department Updated', 'info', 'departments.list');
-        
 
+        $this->DepartmentModel->updateDepartment($id, $departmentData);
+        return $this->RedirectWithtoast('Department Updated', 'info', 'departments.list');
     }
-    public function deleteDepartmentProcess($id)
-    {   
+    public function deleteDepartmentProcess($id) {
         if (!($this->DepartmentModel->isDepartmentExistID($id))) {
             return $this->RedirectWithtoast('Department Doesnt Exist', 'danger', 'departments.list');
         }

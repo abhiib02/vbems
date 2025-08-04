@@ -6,14 +6,13 @@ namespace App\Controllers;
 use App\Models\Option;
 use Config\Services;
 
-class OptionsController extends BaseController
-{
+class OptionsController extends BaseController {
     public $data, $OptionModel;
     public function __construct() {
         $this->OptionModel = new Option();
     }
-        
-    public function addOptionProcess(){
+
+    public function addOptionProcess() {
         $optionData = [
             'NAME' => trim($this->request->getPost("option_name")),
             'TYPE' => (int)$this->request->getPost("option_type"),
@@ -26,7 +25,7 @@ class OptionsController extends BaseController
                 'errors' => [
                     'required' => 'Option Name is required.',
                 ]
-                ],
+            ],
             'option_type' => [
                 'rules' => 'required|in_list[0,1]|numeric',
                 'errors' => [
@@ -56,11 +55,9 @@ class OptionsController extends BaseController
         return $this->RedirectWithtoast('Option Added', 'info', 'options.list');
     }
 
-    public function save($name)
-    {
+    public function save($name) {
         $value = ($this->request->getPost($name) === 'on') ? 1 : ($this->request->getPost($name) ?? 0);
         $this->OptionModel->saveOption($name, $value);
-        return $this->RedirectWithtoast($name .' Option Saved', 'Success', 'options.list');
-        
+        return $this->RedirectWithtoast($name . ' Option Saved', 'Success', 'options.list');
     }
 }

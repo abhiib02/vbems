@@ -72,7 +72,7 @@ class LeaveController extends BaseController {
         $days = $this->daysCountBetweenDates($from_to_date_arr[0], $from_to_date_arr[1]);
         $Department_id = $this->userModel->getDepartmentIDByUserID($user_id);
         $deptLeaveCountPerson = $this->DepartmentModel->getLeavePersonsCountByDepartmentID($Department_id);
-        
+
 
         $from = new \DateTime($from_to_date_arr[0]);
         $to = new \DateTime($from_to_date_arr[1]);
@@ -105,7 +105,7 @@ class LeaveController extends BaseController {
 
         $leavecredit = $this->LeaveCreditModel->getLeaveCreditByUserID($user_id);
 
-        $zeroleavecredit = ($days < $leavecredit) ? 0 : 1 ;
+        $zeroleavecredit = ($days < $leavecredit) ? 0 : 1;
 
         $LeaveRequestData = [
             "USER_ID" => $user_id,
@@ -113,7 +113,7 @@ class LeaveController extends BaseController {
             "FROM_DATE" => $from->format('Y-m-d'),
             "TO_DATE" => $to->format('Y-m-d'),
             "TYPE" => $Leavetype,
-            "ZEROLEAVECREDIT"=> $zeroleavecredit,
+            "ZEROLEAVECREDIT" => $zeroleavecredit,
             "DAYS" => $days,
             "REASON" => $LeaveReason,
             "SUNDAY_COUNT" => $this->countSundays($from_to_date_arr[0], $from_to_date_arr[1]),
@@ -134,14 +134,14 @@ class LeaveController extends BaseController {
             "STATUS" => 'Pending',
         ];
 
-        
+
 
         $this->leaveModel->insertLeave($LeaveRequestData);
         $this->EmailController->employee_leave_mail($LeaveRequestDataEmail);
         return $this->RedirectWithtoast('Leave Request Submitted', 'info', '/my-leaves');
     }
 
-    public function createPaidLeaveProcess(){  
+    public function createPaidLeaveProcess() {
         $User_id = $this->request->getPost('id');
         $from_to_date = $this->request->getPost('from_to_date');
         $from_to_date_arr = explode('/', $from_to_date);
@@ -149,9 +149,9 @@ class LeaveController extends BaseController {
         $to = $from_to_date_arr[1];
         $reason = $this->request->getPost('reason');
         $dept_id = $this->request->getPost('dept_id');
-        
+
         $type = "Paid Leave|PL";
-        
+
         $rules = [
             'id' => [
                 'rules' => 'required',
@@ -182,12 +182,12 @@ class LeaveController extends BaseController {
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'employee.list');
         }
-       
+
         $this->CreateLeave($User_id, $dept_id, $from, $to, $reason, $type);
         return $this->RedirectWithtoast('Paid Leave Created', 'success', 'employee.list');
     }
 
-    public function CreateLeave($user_id, $dept_id, $from, $to, $reason ,$type= "Sandwich") {
+    public function CreateLeave($user_id, $dept_id, $from, $to, $reason, $type = "Sandwich") {
 
         $days = $this->daysCountBetweenDates($from, $to);
 
@@ -223,7 +223,7 @@ class LeaveController extends BaseController {
         if ($LeaveType != 'PL') {
             $leavecredit = (($leavecredit - $LeaveRequestData->DAYS) < 0) ? 0 : ($leavecredit - $LeaveRequestData->DAYS);
         }
-        
+
         $this->LeaveCreditModel->setLeaveCreditByUserID($user_id, $leavecredit);
         $this->EmailController->leaveRequestProcessed_mail($LeaveRequestData, 1);
         return $this->RedirectWithtoast('Leave Request Approved', 'Success', 'leaveRequests.list');

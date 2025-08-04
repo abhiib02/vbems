@@ -61,7 +61,7 @@ abstract class BaseController extends Controller {
     protected function RedirectWithtoast($message, $status, $redirect) {
         // $redirect contains . then it is a named route
         $this->session->setFlashdata('FlashMessage', ['message' => $message, 'status' => $status]);
-        return (str_contains($redirect,'.')) 
+        return (str_contains($redirect, '.'))
             ? redirect()->to(route_to($redirect))
             : redirect()->to($redirect);
     }

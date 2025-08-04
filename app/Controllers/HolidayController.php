@@ -16,7 +16,7 @@ class HolidayController extends BaseController {
 
     public function addHolidayProcess() {
         $CurrentDate = new \DateTime();
-        
+
         $HolidayData = [
             "DATE" => $this->request->getPost('date'),
             "HOLIDAY" => $this->request->getPost('holiday'),
@@ -48,8 +48,8 @@ class HolidayController extends BaseController {
         $CurrentYear = $CurrentDate->format("Y");
         $InputDate = new \DateTime($HolidayData["DATE"]);
         $InputYear = $InputDate->format("Y");
-        
-        if($CurrentYear != $InputYear){
+
+        if ($CurrentYear != $InputYear) {
             return $this->RedirectWithtoast("Year Must be $CurrentYear | Only current year holidays are permitted", 'danger', 'holidays.list');
         }
         $isHolidayExist = $this->HolidayModel->isHolidayExist($HolidayData['DATE']);
@@ -66,7 +66,7 @@ class HolidayController extends BaseController {
         if (!($this->HolidayModel->isHolidayExistID($id))) {
             return $this->RedirectWithtoast('Holiday Doesnt Exist', 'danger', 'holidays.list');
         }
-        
+
         $HolidayData = [
             "DATE" => $this->request->getPost('date'),
             "HOLIDAY" => $this->request->getPost('holiday'),
@@ -99,7 +99,7 @@ class HolidayController extends BaseController {
         $this->HolidayModel->updateHoliday($id, $HolidayData);
         return $this->RedirectWithtoast('Holiday Updated', 'info', 'holidays.list');
     }
-    
+
     public function deleteHolidayProcess($id) {
         if (!($this->HolidayModel->isHolidayExistID($id))) {
             return $this->RedirectWithtoast('Holiday Doesnt Exist', 'danger', 'holidays.list');
