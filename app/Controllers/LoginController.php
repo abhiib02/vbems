@@ -92,7 +92,7 @@ class LoginController extends BaseController {
             $ID = $this->UserModel->getUserIDByEmail($email);
             $this->AttendanceService->markEntryOnLogin($ID);
         }
-        $isAdmin = $isAdmin ? true : false;
+        $isAdmin = (bool) $isAdmin;
         $LoggedInData = [
             'id' => $this->UserModel->getUserID($email),
             'name' => $this->UserModel->getUserName($queryData['EMAIL']),
@@ -108,8 +108,7 @@ class LoginController extends BaseController {
     public function logout() {
 
         if ($this->AuthCheck() || $this->AuthCheckAdmin()) {
-            $LoggedInData = ['id', 'name', 'email', 'logged_in', 'role'];
-            $this->session->remove($LoggedInData);
+            $this->session->destroy();
             return redirect()->to('login');
         } else {
             return redirect()->to('login');
