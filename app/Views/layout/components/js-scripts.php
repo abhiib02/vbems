@@ -44,7 +44,7 @@
 <script src="/js/ezToast.js?v=1.2"></script>
 <script>
     function openDialogModal(id) {
-        let dialog = document.getElementByID(id);
+        let dialog = document.getElementById(id);
         dialog.showModal();
     }
 
