@@ -1,8 +1,12 @@
 <?php include 'components/js-scripts.php' ?>
 
 <?php if (isset($_SESSION['FlashMessage'])) : ?>
+  <?php
+  $flash = $_SESSION['FlashMessage'];
+  unset($_SESSION['FlashMessage']);
+  ?>
   <script>
-    runToast('<?= $_SESSION['FlashMessage']['message'] ?>', '<?= $_SESSION['FlashMessage']['status'] ?>');
+    runToast(<?= json_encode($flash['message']) ?>, <?= json_encode($flash['status']) ?>);
   </script>
 <?php endif; ?>
 <!--
