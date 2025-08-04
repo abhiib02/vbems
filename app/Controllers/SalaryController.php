@@ -18,26 +18,13 @@ class SalaryController extends BaseController {
     public function setSalaryProcess() {
 
         $id = $this->request->getPost("id");
-        $salary = $this->request->getPost("salary");
+        $salary = (float)$this->request->getPost("salary");
         $salaryData = [
             'USER_ID' => $id,
             'BASIC_SALARY' => $salary
         ];
         // check input valid or not
-        $rules = [
-            'id' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'ID is required.',
-                ]
-            ],
-            'salary' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Salary is required.',
-                ]
-            ]
-        ];
+        $rules = $this->salaryValidationRules();
 
         if (!$this->validate($rules)) {
             $response =  [
@@ -55,26 +42,13 @@ class SalaryController extends BaseController {
     public function updateSalaryProcess() {
 
         $id = $this->request->getPost("id");
-        $salary = $this->request->getPost("salary");
+        $salary = (float)$this->request->getPost("salary");
 
         if (!($this->SalaryModel->isSalaryExistByUserID($id))) {
             return $this->RedirectWithtoast('Salary Doesnt Exist', 'danger', 'employee.list');
         }
         // check input valid or not
-        $rules = [
-            'id' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'ID is required.',
-                ]
-            ],
-            'salary' => [
-                'rules' => 'required',
-                'errors' => [
-                    'required' => 'Salary is required.',
-                ]
-            ]
-        ];
+        $rules =  $this->salaryValidationRules();
 
         if (!$this->validate($rules)) {
             $response =  [
@@ -84,7 +58,27 @@ class SalaryController extends BaseController {
             $firstError = reset($response['message']);
             return $this->RedirectWithtoast($firstError, 'warning', 'employee.list');
         }
-        $this->SalaryModel->setSalarybyID($id, $salary);
+        $this->SalaryModel->updateSalary($id, $salary);
         return $this->RedirectWithtoast('Employee Salary Updated', 'info', 'employee.list');
+    }
+
+
+    private function salaryValidationRules(): array {
+        return [
+                'id' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'ID is required.',
+                    ]
+                ],
+                'salary' => [
+                    'rules' => 'required|numeric|greater_than_equal_to[0]',
+                    'errors' => [
+                        'required' => 'Salary is required.',
+                        'numeric' => 'Salary must be a number.',
+                        'greater_than_equal_to' => 'Salary must be non-negative.',
+                    ]
+                ]
+            ];
     }
 }

@@ -33,7 +33,7 @@ class Salary extends Model {
         return $salary->BASIC_SALARY ?? null;
     }
 
-    public function setSalarybyID($user_id, $salary) {
+    public function updateSalary($user_id, $salary) {
         return $this->where('USER_ID', $user_id)
             ->set('BASIC_SALARY', $salary)
             ->update() && $this->db->affectedRows() > 0;
