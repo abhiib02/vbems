@@ -40,7 +40,6 @@ class AttendanceController extends BaseController {
         $this->data['TotalEmployeeOnDate'] = $this->AttendanceModel->getTotalAttendeesonDate(date('Y-m-d'));
         $this->flag['EnableMarkAttendanceOnLogin'] = $this->OptionModel->getOptionValue('EnableMarkAttendanceOnLogin');
     }
-
     public function AttendanceByDate() {
         $date = $this->request->getGet('date');
         // Basic validation
