@@ -25,6 +25,9 @@ class AuthGuard implements FilterInterface {
      * @return mixed
      */
     public function before(RequestInterface $request, $arguments = null) {
+
+        //role = 1 (Admin)
+        //role = 0 (Employee)
         //
         $session = Services::session();
         if (!($session->has('logged_in') && $session->get('role') == 0)) {
