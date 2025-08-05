@@ -9,7 +9,7 @@
 #   web-deploy:
 #     name: 🎉 Deploy
 #     runs-on: ubuntu-latest
-#     if: contains(github.event.head_commit.message, 'Deploy')  # ✅ Only run if commit message has "Deploy"
+#     if: contains(github.event.head_commit.message, 'Deploy:')  # ✅ Only run if commit message has "Deploy"
 #     steps:
 #       - name: 🚚 Get latest code
 #         uses: actions/checkout@v4
