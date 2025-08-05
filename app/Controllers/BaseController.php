@@ -55,6 +55,11 @@ abstract class BaseController extends Controller {
 
         // Preload any models, libraries, etc, here.
         $this->session = Services::session();
+
+        // Force MySQL timezone for the session
+        $db = \Config\Database::connect();
+        $db->query("SET time_zone = '+05:30'");
+
         // E.g.: $this->session = service('session');
     }
 
