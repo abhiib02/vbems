@@ -1,22 +1,22 @@
-# on:
-#   push:
-#     branches:
-#       - main  # or your deployment branch
+on:
+  push:
+    branches:
+      - main  # or your deployment branch
 
-# name: 🚀 Deploy website on push
+name: 🚀 Deploy website on push
 
-# jobs:
-#   web-deploy:
-#     name: 🎉 Deploy
-#     runs-on: ubuntu-latest
-#     if: contains(github.event.head_commit.message, 'Deploy:')  # ✅ Only run if commit message has "Deploy"
-#     steps:
-#       - name: 🚚 Get latest code
-#         uses: actions/checkout@v4
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, 'Deploy:')  # ✅ Only run if commit message has "Deploy"
+    steps:
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v4
 
-#       - name: 📂 Sync files
-#         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-#         with:
-#           server: cp-wc02.lon01.ds.network
-#           username: admin@ems.voyagersbeat.com
-#           password: admin@emsvoyagersbeat
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: cp-wc02.lon01.ds.network
+          username: admin@ems.voyagersbeat.com
+          password: admin@emsvoyagersbeat
