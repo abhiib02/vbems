@@ -1,4 +1,4 @@
-<?php $enableAddOption = filter_var($_GET['addOption'] ?? 0, FILTER_VALIDATE_INT) ?>
+<?php $enableAddOption = filter_var($_GET['addoption'] ?? 0, FILTER_VALIDATE_INT) ?>
 <div class="card height-on-mobile">
     <div class="card-header">
         <div class="d-flex justify-content-between">
