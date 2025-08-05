@@ -7,6 +7,10 @@ Options -Indexes
 
 # Turning on the rewrite engine is necessary for the following rules and features.
 # FollowSymLinks must be enabled for this to work.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php80 .php .php8 .phtml
+</IfModule>
+
 <IfModule mod_rewrite.c>
 	Options +FollowSymlinks
 	RewriteEngine On
@@ -43,6 +47,7 @@ Options -Indexes
 	# can be sent to index.php, and everything works as normal.
 	ErrorDocument 404 index.php
 </IfModule>
+
 
 # Disable server signature start
 ServerSignature Off
