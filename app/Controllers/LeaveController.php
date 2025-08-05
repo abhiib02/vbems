@@ -46,7 +46,7 @@ class LeaveController extends BaseController {
                 ]
             ],
             'from_to_date' => [
-                'rules' => 'required|regex_match[/\d{4}-\d{2}-\d{2}\/\d{4}-\d{2}-\d{2}/]',
+                'rules' => 'required|regex_match[/\d{2}-\d{2}-\d{4}\/\d{2}-\d{2}-\d{4}/]',
                 'errors' => [
                     'required' => 'Date is required.',
                     'regex_match' => 'Date range format is invalid.'
