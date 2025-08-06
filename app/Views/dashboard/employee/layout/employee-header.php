@@ -91,7 +91,7 @@
                     <div class="container-fluid">
                         <button onclick="history.back()" class="btn btn-outline-light"><i
                                 class="ri-arrow-left-line"></i> Back</button>
-                        <span class="navbar-brand mb-0 h1"><?= $title ?></span>
+                        <span class="navbar-brand mb-0 h1  hide-on-mobile"><?= $title ?></span>
                         <div>
                             <?php if ($ShowPunchOutButton): ?>
                                 <button type="submit" class="btn btn-outline-light mb-1 hide-on-desktop"
