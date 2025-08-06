@@ -112,7 +112,7 @@
                                             <button class="btn btn-outline-secondary btn-sm" onclick="closeDialog()">X</button>
                                         </div>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body pb-5 mb-5">
                                         <?php include __DIR__ . '/../form/admin-create-paid-leave-form.php' ?>
                                     </div>
                                 </div>

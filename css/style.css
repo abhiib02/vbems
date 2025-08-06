@@ -162,3 +162,7 @@ main{
 .table>:not(caption)>*>*{
       border-bottom-width: 0px;
 }
+
+span.easepick-wrapper {
+    z-index: 3;
+}

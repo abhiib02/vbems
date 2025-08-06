@@ -9,10 +9,11 @@
                     <div class="row">
                         <input type="hidden" name="user_id" value="<?= $id ?>">
                         <div class="col-lg-8">
-                            <div class="mb-3">
-                                <label for="from_to_date" class="form-label">From Date / To Date</label>
+                            <div class="form-floating mb-3">
+
                                 <input type="text" id="datepicker" required class="form-control"
                                     name="from_to_date">
+                                <label for="from_to_date" class="form-label">From Date / To Date</label>
                             </div>
                             <div class="alert alert-danger" id="alertleavecredit" hidden role="alert">
                                 Your are Applying for <b><span id="diffInDays"></span></b> leave but your Leave Credit is <b><?= $leavecredit ?> Days.</b><br>
@@ -21,20 +22,21 @@
                         </div>
 
                         <div class="col-lg-4">
-                            <div class="mb-3">
-                                <label for="type" class="form-label">Leave Type</label>
+                            <div class="form-floating mb-3">
+
                                 <select class="form-select" name="type" id="type" required>
                                     <option selected disabled value>Select Leave Type</option>
                                     <option value="Casual Leave|CL">Casual Leave</option>
                                     <option value="Sick Leave|SL">Sick Leave</option>
                                     <option value="Exam Leave|EL">Exam Leave</option>
                                 </select>
+                                <label for="type" class="form-label">Leave Type</label>
                             </div>
                         </div>
                         <div class="col-lg-12">
-                            <div class="mb-3">
+                            <div class="form-floating mb-3">
+                                <textarea class="form-control" name="reason" id="reason" style="height: 200px" required></textarea>
                                 <label for="reason" class="form-label">Reason (Explaination)</label>
-                                <textarea class="form-control" name="reason" id="reason" rows="6" required></textarea>
                             </div>
                         </div>
                     </div>

@@ -10,20 +10,20 @@
                     <div class="row">
                         <input type="hidden" name="id" value="<?= $employee->ID ?>">
                         <div class="">
-                            <div class="mb-3">
-                                <label for="name" class="form-label">Name</label>
+                            <div class="form-floating mb-3">
                                 <input type="text" id="name" name="name" class="form-control"
-                                    value="<?= $employee->NAME ?>" disabled>
+                                value="<?= $employee->NAME ?>" disabled>
+                                <label for="name" class="form-label">Name</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
+                            <div class="form-floating mb-3">
                                 <input type="text" id="email" name="email" class="form-control"
-                                    value="<?= $employee->EMAIL ?>" disabled>
+                                value="<?= $employee->EMAIL ?>" disabled>
+                                <label for="email" class="form-label">Email</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="contact" class="form-label">Contact</label>
+                            <div class="form-floating mb-3">
                                 <input type="text" id="contact" name="contact" maxlength="10" class="form-control"
-                                    value="<?= $employee->CONTACT ?>" disabled>
+                                value="<?= $employee->CONTACT ?>" disabled>
+                                <label for="contact" class="form-label">Contact</label>
                             </div>
 
                         </div>
@@ -33,35 +33,35 @@
             </div>
             <div class="col-md-6 col-lg-4 hide-on-mobile">
 
-                <div class="mb-3">
+                <div class="form-floating mb-3">
                     <?php $roles = [
                         'Employee',
                         'Admin'
                     ]; ?>
-                    <label for="role" class="form-label">Role</label>
                     <input type="text" id="role" name="role" class="form-control" value="<?= $roles[$employee->ROLE] ?>"
-                        readonly disabled>
+                    readonly disabled>
+                    <label for="role" class="form-label">Role</label>
                 </div>
                 <div class="row">
                     <div class="col-6">
-                        <div class="mb-3">
-                            <label for="Department" class="form-label">Department</label>
+                        <div class="form-floating mb-3">
                             <input type="text" id="Department" name="" class="form-control"
-                                value="<?= $DepartmentName ?>" readonly disabled>
+                            value="<?= $DepartmentName ?>" readonly disabled>
+                            <label for="Department" class="form-label">Department</label>
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="mb-3">
-                            <label for="designation" class="form-label">Designation</label>
+                        <div class="form-floating mb-3">
                             <input type="text" id="name" name="" class="form-control"
-                                value="<?= $employee->DESIGNATION ?>" readonly disabled>
+                            value="<?= $employee->DESIGNATION ?>" readonly disabled>
+                            <label for="designation" class="form-label">Designation</label>
                         </div>
                     </div>
                 </div>
-                <div class="mb-3">
-                    <label for="Salary" class="form-label">Basic Salary</label>
+                <div class="form-floating mb-3">
                     <input type="text" id="Salary" name="" class="form-control" value="<?= $salary ?>"
-                        readonly disabled>
+                    readonly disabled>
+                    <label for="Salary" class="form-label">Basic Salary</label>
                 </div>
             </div>
         </div>
