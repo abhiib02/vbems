@@ -42,32 +42,28 @@ self.addEventListener('activate', event => {
   );
   self.clients.claim();
 });
-// Fetch: Serve from cache or fetch from network
-self.addEventListener('fetch', event => {
-  const {
-    request
-  } = event;
 
-  // Only cache GET requests
-  if (request.method !== 'GET') return;
+
+self.addEventListener('fetch', event => {
+  // Only handle GET requests
+  if (event.request.method !== 'GET') return;
 
   event.respondWith(
-    caches.match(request).then(cachedResponse => {
+    caches.match(event.request).then(cachedResponse => {
       if (cachedResponse) {
-        return cachedResponse;
+        return cachedResponse; // ✅ Serve from cache
       }
 
-      // Fetch from network and add to cache
-      return fetch(request).then(networkResponse => {
-        return caches.open(CACHE_NAME).then(cache => {
-          cache.put(request, networkResponse.clone());
-          return networkResponse;
-        });
-      }).catch(() => {
-        // Optional: Fallback if offline
-        if (request.destination === 'document') {
-          return caches.match('/offline.html');
-        }
+      // ❌ If not found in cache, block the request (do NOT go to network)
+      // Optional: Serve fallback (like offline.html) for documents
+      if (event.request.destination === 'document') {
+        return caches.match('/offline.html');
+      }
+
+      // For other files (e.g., images, fonts), just return a 404 response
+      return new Response('Not cached and no fallback available.', {
+        status: 404,
+        statusText: 'Not Found'
       });
     })
   );
