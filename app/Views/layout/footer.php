@@ -1,5 +1,5 @@
 <?php include 'components/js-scripts.php' ?>
-
+<script src="/js/main.js"></script>
 <?php if (isset($_SESSION['FlashMessage'])) : ?>
   <?php
   $flash = $_SESSION['FlashMessage'];
