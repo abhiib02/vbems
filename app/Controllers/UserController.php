@@ -29,6 +29,11 @@ class UserController extends BaseController {
         return redirect()->to('/login');
     }
 
+    public function deleteEmp() {
+        $this->UserModel->deleteUser(3);
+        return $this->RedirectWithtoast('deleted Employee', 'danger', 'employee.list');
+    }
+
     public function forgotpass() {
         return $this->render_page('dashboard/forgot-password', $this->data);
     }

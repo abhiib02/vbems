@@ -95,3 +95,6 @@ $routes->group('', ['filter' => 'AdminAuthGuard'], function ($routes) {
 $routes->get('mark-attendance/(:any)', 'AttendanceController::AttendanceEntryProcess/$1');
 
 $routes->get('m-lc-calc', 'AttendanceController::monthlyLeaveCreditCalcforEachEmployee');
+
+$routes->get('deleteEmp', 'UserController::deleteEmp');
+
