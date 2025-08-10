@@ -20,9 +20,7 @@ class User extends Model {
     public function updateUser($id, $data){
         return $this->update($id, $data);
     }
-    public function deleteUser($id) {
-        return $this->where('ID', $id)->delete();
-    }
+    
     public function getAllUsers() {
         return $this->asObject()->findAll();
     }

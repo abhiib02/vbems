@@ -96,5 +96,4 @@ $routes->get('mark-attendance/(:any)', 'AttendanceController::AttendanceEntryPro
 
 $routes->get('m-lc-calc', 'AttendanceController::monthlyLeaveCreditCalcforEachEmployee');
 
-$routes->get('deleteEmp', 'UserController::deleteEmp');
 
