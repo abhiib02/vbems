@@ -143,7 +143,7 @@ class AdminDashboardController extends BaseController {
         ];
         $this->data = array_merge($this->data, $this->getAllDataforAdmin_EmployeeAttendance($id));
         $this->data = array_merge($this->data, $additionalData);
-        return $this->renderAdminPage('dashboard/admin/attendance/admin-employeeattendance', $this->data);
+        return $this->renderAdminPage('dashboard/admin/attendance/admin-employeeAttendance', $this->data);
     }
     public function holidaysList() {
         $additionalData = [
